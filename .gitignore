@@ -1,0 +1,5 @@
+.idea
+*.iml
+
+Addons/Blizzard_*
+FrameXML
