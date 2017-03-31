@@ -21,7 +21,7 @@ local blacklist =
 local frame = CreateFrame("Frame", "InstanceScheduleFrame")
 
 frame:SetScript("OnEvent", function(self, event, ...)
-    local args = {... }
+    local args = { ... }
     if event == "VARIABLES_LOADED" then
         if not InstanceSchedulerBlacklist then
             InstanceSchedulerBlacklist = {}
@@ -53,9 +53,11 @@ frame:SetScript("OnEvent", function(self, event, ...)
             C_Timer.After(1, function()LeaveParty() end)
         end
     elseif event == "GROUP_ROSTER_UPDATE" then
-        if IsInGroup() and GetNumGroupMembers() == 2 and UnitIsGroupLeader("player") then
+        local members = GetNumGroupMembers()
+        if IsInGroup() and UnitIsGroupLeader("player") and members > InstanceScheduler.TempMembers then
             InstanceScheduler:PartySchedule()
         end
+        InstanceScheduler.TempMembers = members or 0
     end
 end)
 

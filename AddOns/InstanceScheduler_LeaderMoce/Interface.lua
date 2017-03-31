@@ -65,3 +65,29 @@ function InstanceScheduler:AddBlacklistSlash(str)
     InstanceSchedulerBlacklist:insert(fullName)
     DEFAULT_CHAT_FRAME:AddMessage(self.PrintPrefix..self.Messages.AddBlacklistSuccess)
 end
+
+function InstanceScheduler:RemoveBlacklistSlash(str)
+    local fullName = str:gsub("^%s*(.-)%s*$", "%1")
+    for i,v in ipairs(InstanceSchedulerBlacklist) do
+        if fullName == v then
+            InstanceSchedulerBlacklist:remove(i)
+            DEFAULT_CHAT_FRAME:AddMessage(self.PrintPrefix..self.Messages.RemoveBlacklistSuccess)
+            return
+        end
+    end
+    DEFAULT_CHAT_FRAME:AddMessage(self.PrintPrefix..self.Messages.NotInBlacklist)
+end
+
+function InstanceScheduler:ListBlacklistSlash(str)
+    DEFAULT_CHAT_FRAME:AddMessage(self.Messages.ListBlacklist:format(#InstanceSchedulerBlacklist))
+    for i,v in ipairs(InstanceSchedulerBlacklist) do
+        DEFAULT_CHAT_FRAME:AddMessage(self.Messages.BlacklistFormat:format(i, v))
+    end
+end
+
+SlashCmdList["INSTANCESCHEDULERADDBLACKLIST"] = InstanceScheduler.AddBlacklistSlash
+SLASH_INSTANCESCHEDULERADDBLACKLIST1 = "/isadd"
+SlashCmdList["INSTANCESCHEDULERREMOVEBLACKLIST"] = InstanceScheduler.RemoveBlacklistSlash
+SLASH_INSTANCESCHEDULERREMOVEBLACKLIST1 = "/isrm"
+SlashCmdList["INSTANCESCHEDULERLISTBLACKLIST"] = InstanceScheduler.ListBlacklistSlash
+SLASH_INSTANCESCHEDULERLISTBLACKLIST1 = "/isls"
