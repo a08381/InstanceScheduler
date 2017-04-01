@@ -6,6 +6,8 @@
 -- To change this template use File | Settings | File Templates.
 --
 
+local InstanceScheduler = _G["InstanceScheduler"]
+
 InstanceScheduler.PrintPrefix = "|cff99ffffInstance Schedule|r - "
 InstanceScheduler.AutoStart = true
 InstanceScheduler.IsPaid = true

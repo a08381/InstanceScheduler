@@ -6,6 +6,8 @@
 -- To change this template use File | Settings | File Templates.
 --
 
+local InstanceScheduler = _G["InstanceScheduler"]
+
 function InstanceScheduler:NameFormat(name, realm)
     local fullName = name.."-"
     if not realm or realm == "" then

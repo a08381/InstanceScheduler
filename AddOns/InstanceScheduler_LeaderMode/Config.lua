@@ -11,13 +11,22 @@ InstanceScheduler.AutoStart = true
 InstanceScheduler.TempTime = GetTime()
 InstanceScheduler.Keywords =
 {
-    DEFAULT = {"CD"},
     LK = {"HLK", "无敌", "巫妖王", "冰冠"},
     ULD = {"ULD", "奥杜尔", "飞机头", "米米尔隆", "萨隆", "傻龙"},
     FL = {"火源", "火焰之地", "火乌鸦", "火鹰", "拉格纳罗斯", "大螺丝"},
     DS = {"DS", "龙魂", "死亡之翼", "大下巴" },
     MGS = {"魔古山", "伊拉贡", "星光龙"},
     TOT = {"雷电", "季鹍"}
+}
+InstanceScheduler.Repeats =
+{
+    DEFAULT = "需要副本CD的注意啦！直接在副本门口M我1即可！发送副本关键字即可获得更详细的信息！",
+    LK = "进本后，上楼将鲜血女王击杀，染到CD后退组，出本自行将难度改为25人普通，然后进本改英雄即可",
+    ULD = "进本后，将熔炉BOSS击杀，染到CD后退组，出本自行将难度改为25人普通，然后进本击杀尤格萨隆即可",
+    FL = "进本后直接击杀BOSS即可",
+    DS = "由于老七比较麻烦就击杀了，请先自行打到老五然后出本进组",
+    MGS = "进本后直接击杀BOSS即可",
+    TOT = "请先自行击杀老二之后进组获取季鹍进度"
 }
 InstanceScheduler.Messages =
 {
