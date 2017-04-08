@@ -6,8 +6,8 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-local _, InstanceScheduler = ...
-_G["InstanceScheduler"] = InstanceScheduler
+local _, Addon = ...
+_G["InstanceScheduler"] = Addon
 
 --[[
 local blacklist =
@@ -23,66 +23,68 @@ local frame = CreateFrame("Frame", "InstanceScheduleFrame")
 frame:SetScript("OnEvent", function(self, event, ...)
     local args = { ... }
     if event == "VARIABLES_LOADED" then
-        if not InstanceSchedulerBlacklist then
-            InstanceSchedulerBlacklist = {}
+        if not InstanceSchedulerVariables then
+            InstanceSchedulerVariables =
+            {
+                Users = {},
+                Blacklist = {},
+                Messages =
+                {
+                    Whisper =
+                    {
+                        Keywords = Addon.Keywords,
+                        Repeats = Addon.Repeats
+                    },
+
+                }
+            }
         end
         self:UnregisterEvent("VARIABLES_LOADED")
     elseif event == "CHAT_MSG_WHISPER" then
-        if args[1] == "1" and args[2] ~= InstanceScheduler:NameFormat(UnitName("player")) then
-            if IsInGroup() then
-                if not UnitInParty(args[2]) then
-                    SendChatMessage(InstanceScheduler.Messages.OthersInGroup, "WHISPER", nil, args[2])
-                else
-                    SendChatMessage(InstanceScheduler.Messages.GroupWelcome, "PARTY")
-                end
-            else
+        if args[1] == "1" and args[2] ~= Addon:NameFormat(UnitName("player")) then
+            if GetNumGroupMembers() ~= 5 then
                 InviteUnit(args[2])
             end
         end
-    elseif event == "CHAT_MSG_PARTY" then
-        if args[1] == "1" and args[2] ~= InstanceScheduler:NameFormat(UnitName("player")) then
-            PromoteToLeader(args[2])
-            SendChatMessage(InstanceScheduler.Messages.ChangeLeader, "PARTY")
-        end
-    elseif event == "CHAT_MSG_PARTY_LEADER" then
-        if args[1] == "1" and args[2] ~= InstanceScheduler:NameFormat(UnitName("player")) then
-            SendChatMessage(InstanceScheduler.Messages.Finish, "PARTY")
-            if isPaid and IsPaidRealm(InstanceScheduler:NameFormat(UnitName("player"))) then
-                SendChatMessage(InstanceScheduler.Messages.Notice, "PARTY")
+    elseif event == "CHAT_MSG_GUILD" then
+        if args[1] == "1" and args[2] ~= Addon:NameFormat(UnitName("player")) then
+            if GetNumGroupMembers() ~= 5 then
+                InviteUnit(args[2])
             end
-            C_Timer.After(1, function()LeaveParty() end)
         end
     elseif event == "GROUP_ROSTER_UPDATE" then
         local members = GetNumGroupMembers()
-        if IsInGroup() and UnitIsGroupLeader("player") and members > InstanceScheduler.TempMembers then
-            InstanceScheduler:PartySchedule()
+        if IsInGroup() and UnitIsGroupLeader("player") and members > Addon.TempMembers then
+            for i=1,members-1 do
+                if not UnitIsConnected("party"..i) then
+                    Addon:PartySchedule("party"..i, 0)
+                end
+            end
         end
-        InstanceScheduler.TempMembers = members or 0
+        Addon.TempMembers = members or 0
     end
 end)
 
-if InstanceScheduler:AutoStart then
+if Addon:AutoStart then
     frame:RegisterEvent("CHAT_MSG_WHISPER")
-    frame:RegisterEvent("CHAT_MSG_PARTY")
-    frame:RegisterEvent("CHAT_MSG_PARTY_LEADER")
+    frame:RegisterEvent("CHAT_MSG_GUILD")
     frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-    frame:SetScript("OnUpdate", InstanceScheduler:UpdateSchedule)
+    frame:SetScript("OnUpdate", Addon:UpdateSchedule)
 end
 
 local button = CreateFrame("Button", "InstanceScheduleButton")
 button:SetScript("OnClick", function(self)
-    if InstanceScheduler.AutoStart then
+    if Addon.AutoStart then
         frame:UnregisterAllEvents()
         frame:SetScript("OnUpdate", nil)
-        InstanceScheduler.AutoStart = false
-        DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler:PrintPrefix.."已禁用")
+        Addon.AutoStart = false
+        DEFAULT_CHAT_FRAME:AddMessage(Addon:PrintPrefix.."已禁用")
     else
         frame:RegisterEvent("CHAT_MSG_WHISPER")
-        frame:RegisterEvent("CHAT_MSG_PARTY")
-        frame:RegisterEvent("CHAT_MSG_PARTY_LEADER")
+        frame:RegisterEvent("CHAT_MSG_GUILD")
         frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-        frame:SetScript("OnUpdate", InstanceScheduler:UpdateSchedule)
-        InstanceScheduler.AutoStart = true
-        DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已启用")
+        frame:SetScript("OnUpdate", Addon:UpdateSchedule)
+        Addon.AutoStart = true
+        DEFAULT_CHAT_FRAME:AddMessage(Addon.PrintPrefix.."已启用")
     end
 end)

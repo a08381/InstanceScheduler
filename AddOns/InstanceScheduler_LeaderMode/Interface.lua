@@ -6,7 +6,9 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-function InstanceScheduler:NameFormat(name, realm)
+local Addon = _G["InstanceScheduler"]
+
+function Addon:NameFormat(name, realm)
     local fullName = name.."-"
     if not realm or realm == "" then
         fullName = fullName..GetRealmName()
@@ -16,35 +18,66 @@ function InstanceScheduler:NameFormat(name, realm)
     return fullName
 end
 
-function InstanceScheduler:GetRealm(fullName)
-    if fullName:find("-") then
-        local _, index = fullName:find("-")
-        index = index + 1
-        return fullName:sub(index)
+function Addon:CommandInfo(str)
+    local stats = 0
+    local fps = GetFramerate()
+    local _,_,latencyHome,latencyWorld = GetNetStats()
+    if fps >= 30 then
+        stats = stats + 0
+    elseif fps >= 20 and fps < 30 then
+        stats = stats + 1
+    elseif fps >= 10 and fps < 20 then
+        stats = stats + 2
     else
-        return GetRealmName()
+        stats = stats + 3
     end
+    if latencyHome < 150 then
+        stats = stats + 0
+    elseif latencyHome >= 150 and latencyHome < 300 then
+        stats = stats + 1
+    elseif latencyHome >= 300 and latencyHome < 500 then
+        stats = stats + 2
+    else
+        stats = stats + 3
+    end
+    if latencyWorld < 150 then
+        stats = stats + 0
+    elseif latencyWorld >= 150 and latencyWorld < 300 then
+        stats = stats + 1
+    elseif latencyWorld >= 300 and latencyWorld < 500 then
+        stats = stats + 2
+    else
+        stats = stats + 3
+    end
+    local statusText
+    if stats == 0 then
+        statusText = Addon.Messages.InfoGreat
+    elseif stats == 1 then
+        statusText = Addon.Messages.InfoGood
+    elseif stats == 2 then
+        statusText = Addon.Messages.InfoNotbad
+    elseif stats == 3 then
+        statusText = Addon.Messages.InfoBad
+    else
+        statusText = Addon.Messages.InfoWorst
+    end
+    SenfChatMessage(Addon.Messages.CommandInfo:format(latencyHome, latencyWorld, fps, statusText), "GUILD")
 end
 
-function InstanceScheduler:IsPaidRealm(fullName)
-    for _,v in pairs(self.PaidRealm) do
-        if GetRealm(fullName) == v then
-            return true
-        end
-    end
-    return false
-end
-
-function InstanceScheduler:PartySchedule()
-    if UnitIsConnected("party1") then
+function Addon:PartySchedule(unit, i)
+    if UnitIsConnected(unit) then
         ResetInstances()
         SendChatMessage(self.Messages.GroupWelcome,"PARTY")
     else
-        C_Timer.After(1, self.PartySchedule)
+        if i > 6 then
+            UninviteUnit(self:NameFormat(UnitName(unit)), "Disconneted")
+            return
+        end
+        C_Timer.After(1, function()self:PartySchedule(unit, i+1) end)
     end
 end
 
-function InstanceScheduler:UpdateSchedule()
+function Addon:UpdateSchedule()
     local t = GetTime()
     if StaticPopup1:IsShown() and StaticPopup1Button1:GetText() == "取消" then
         if t - self.TempTime > 1 then
@@ -54,7 +87,7 @@ function InstanceScheduler:UpdateSchedule()
     end
 end
 
-function InstanceScheduler:AddBlacklistSlash(str)
+function Addon:AddBlacklistSlash(str)
     local fullName = str:gsub("^%s*(.-)%s*$", "%1")
     for _,v in pairs(InstanceSchedulerBlacklist) do
         if fullName == v then
@@ -66,7 +99,7 @@ function InstanceScheduler:AddBlacklistSlash(str)
     DEFAULT_CHAT_FRAME:AddMessage(self.PrintPrefix..self.Messages.AddBlacklistSuccess)
 end
 
-function InstanceScheduler:RemoveBlacklistSlash(str)
+function Addon:RemoveBlacklistSlash(str)
     local fullName = str:gsub("^%s*(.-)%s*$", "%1")
     for i,v in ipairs(InstanceSchedulerBlacklist) do
         if fullName == v then
@@ -78,7 +111,7 @@ function InstanceScheduler:RemoveBlacklistSlash(str)
     DEFAULT_CHAT_FRAME:AddMessage(self.PrintPrefix..self.Messages.NotInBlacklist)
 end
 
-function InstanceScheduler:ListBlacklistSlash(str)
+function Addon:ListBlacklistSlash(str)
     DEFAULT_CHAT_FRAME:AddMessage(self.Messages.ListBlacklist:format(#InstanceSchedulerBlacklist))
     for i,v in ipairs(InstanceSchedulerBlacklist) do
         DEFAULT_CHAT_FRAME:AddMessage(self.Messages.BlacklistFormat:format(i, v))

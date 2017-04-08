@@ -6,37 +6,48 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-InstanceScheduler.PrintPrefix = "|cff99ffffInstance Schedule|r - "
-InstanceScheduler.AutoStart = true
-InstanceScheduler.TempTime = GetTime()
-InstanceScheduler.Keywords =
+local Addon = _G["InstanceScheduler"]
+
+Addon.AutoStart = true
+Addon.TempTime = GetTime()
+Addon.Keywords =
 {
     LK = {"HLK", "无敌", "巫妖王", "冰冠"},
     ULD = {"ULD", "奥杜尔", "飞机头", "米米尔隆", "萨隆", "傻龙"},
     FL = {"火源", "火焰之地", "火乌鸦", "火鹰", "拉格纳罗斯", "大螺丝"},
-    DS = {"DS", "龙魂", "死亡之翼", "大下巴" },
+    DS = {"DS", "龙魂", "死亡之翼", "大下巴"},
     MGS = {"魔古山", "伊拉贡", "星光龙"},
     TOT = {"雷电", "季鹍"}
 }
-InstanceScheduler.Repeats =
+Addon.Repeats =
 {
-    DEFAULT = "需要副本CD的注意啦！直接在副本门口M我1即可！发送副本关键字即可获得更详细的信息！",
-    LK = "进本后，上楼将鲜血女王击杀，染到CD后退组，出本自行将难度改为25人普通，然后进本改英雄即可",
-    ULD = "进本后，将熔炉BOSS击杀，染到CD后退组，出本自行将难度改为25人普通，然后进本击杀尤格萨隆即可",
-    FL = "进本后直接击杀BOSS即可",
-    DS = "由于老七比较麻烦就击杀了，请先自行打到老五然后出本进组",
-    MGS = "进本后直接击杀BOSS即可",
-    TOT = "请先自行击杀老二之后进组获取季鹍进度"
+    DEFAULT = "需要副本CD的注意啦！直接在副本门口M我打1即可！发送副本关键字即可获得更详细的信息！\n龙魂，决战奥格，火源只能染普通，要刷英雄或史诗难度的请自行从头打",
+    LK = "M我打1进本后，上楼将鲜血女王击杀，染到CD后退组，出本自行将难度改为25人普通，然后进本改英雄即可",
+    ULD = "M我打1进本后，将熔炉BOSS击杀，染到CD后退组，出本自行将难度改为25人普通，然后进本击杀尤格萨隆即可",
+    FL = "M我打1进本后直接击杀BOSS即可",
+    DS = "由于老七比较麻烦就击杀了，请先自行打到老五然后出本M我打1进组",
+    MGS = "M我打1进本后直接击杀BOSS即可",
+    TOT = "请先自行击杀老二之后出本M我打1进组获取季鹍进度"
 }
-InstanceScheduler.Messages =
+Addon.Messages =
 {
-    AddBlacklistSuccess = "成功将玩家添加到黑名单",
-    AlreadyInBlacklist = "这名玩家已经在黑名单里了",
-    RemoveBlacklistSuccess = "成功将玩家移出黑名单",
-    NotInBlacklist = "这名玩家并不在在黑名单里",
-    ListBlacklist = "当前黑名单中共有 %d 名玩家：",
-    BlacklistFormat = "%d、 %s",
-    GroupWelcome = "副本已重置，请进本，进本后请在小队频道里发1~~~",
-    ChangeLeader = "已将队长转交，刷无敌请自行修改难度为英雄，修改难度完毕或确认后请打1~~~",
-    Finish = "服务完成~~祝您刷出想要的坐骑~~~",
+    CommandPrefix = "@进度号 ",
+
+    InfoGreat = "优秀",
+    InfoGood = "良好",
+    InfoNotbad = "不错",
+    InfoBad = "较差",
+    InfoWorst = "极差",
+    CommandInfo = "当前进度号本地延迟 %dms，世界延迟 %dms，FPS %d，状态%s。",
+
+    CommandCheck = "当前队伍内有 %d 名玩家，其中 %d 名玩家进队时长超过 30 分钟， %d 名玩家离线",
+    CommandCheckTime = "当前队伍中进队时长超过 30 分钟的有： ",
+    CommandCheckOffline = "当前队伍中离线的玩家有： ",
+
+    CommandKick = "成功发出移除玩家指令",
+
+    CommandStart = "成功发出启动指令，请尝试使用“%sinfo”来确认是否启动成功",
+    CommandStop = "成功发出停止指令，同时将不接收除“%sstart”以外的任何指令",
+
+    CommandClose = "指令接收成功，将在 5 秒内关闭游戏。。。"
 }
