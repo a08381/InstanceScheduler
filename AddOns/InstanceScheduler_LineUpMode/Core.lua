@@ -61,7 +61,7 @@ if InstanceScheduler:AutoStart then
     frame:RegisterEvent("CHAT_MSG_PARTY")
     frame:RegisterEvent("CHAT_MSG_PARTY_LEADER")
     frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-    frame:SetScript("OnUpdate", InstanceScheduler:UpdateSchedule)
+    frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
 end
 
 local button = CreateFrame("Button", "InstanceScheduleButton")
@@ -76,7 +76,7 @@ button:SetScript("OnClick", function(self)
         frame:RegisterEvent("CHAT_MSG_PARTY")
         frame:RegisterEvent("CHAT_MSG_PARTY_LEADER")
         frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-        frame:SetScript("OnUpdate", InstanceScheduler:UpdateSchedule)
+        frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
         InstanceScheduler.AutoStart = true
         DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已启用")
     end
