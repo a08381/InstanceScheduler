@@ -6,43 +6,94 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-local InstanceScheduler = _G["InstanceScheduler"]
+function InstanceScheduler:SendPartyMessage(key, ...)
+    local args = { ... }
+    local message = self:Messages[key]
+    if #args > 0 then
+        message = message:format(...)
+    end
+    SendChatMessage(message, "PARTY")
+end
 
-function InstanceScheduler:NameFormat(name, realm)
-    local fullName = name.."-"
+function InstanceScheduler:SendWhisperMessage(key, name, ...)
+    local args = { ... }
+    local message = self:Messages[key]
+    if #args > 0 then
+        message = message:format(...)
+    end
+    SendChatMessage(message, "WHISPER", nil, name)
+end
+
+function InstanceScheduler:NameFormat(name, realm, hide)
+    local fullName = name
     if not realm or realm == "" then
-        fullName = fullName..GetRealmName()
+        if not hide then
+            fullName = fullName.."-"..GetRealmName()
+        end
     else
-        fullName = fullName..realm
+        fullName = fullName.."-"..realm
     end
     return fullName
 end
 
-function InstanceScheduler:GetRealm(fullName)
-    if fullName:find("-") then
-        local _, index = fullName:find("-")
-        index = index + 1
-        return fullName:sub(index)
-    else
-        return GetRealmName()
-    end
-end
-
-function InstanceScheduler:IsPaidRealm(fullName)
-    for _,v in pairs(self.PaidRealm) do
-        if GetRealm(fullName) == v then
-            return true
+function InstanceScheduler:PartySchedule(times)
+    if IsInGroup() then
+        if UnitIsConnected("party1") then
+            ResetInstances()
+            self:SendPartyMessage("ResetComplete")
+            C_Timer.After(1, function()
+                self:IntoInstanceSchedule()
+            end)
+        else
+            if times >= 6 then
+                local name,realm = UnitName("party1")
+                local s = self:NameFormat(name, realm, true)
+                UninviteUnit(s)
+                self:SendWhisperMessage("NetProblem", s)
+            else
+                C_Timer.After(1, function()
+                    self:PartySchedule(times+1)
+                end)
+            end
         end
     end
-    return false
 end
 
-function InstanceScheduler:PartySchedule()
-    if UnitIsConnected("party1") then
-        ResetInstances()
-        SendChatMessage(self.Messages.GroupWelcome,"PARTY")
-    else
-        C_Timer.After(1, self.PartySchedule)
+function InstanceScheduler:IntoInstanceSchedule()
+    if IsInGroup() then
+        if not GetPlayerMapPosition("party1") then
+            local name,realm = UnitName("party1")
+            local s = self:NameFormat(name, realm, true)
+            PromoteToLeader(s)
+            self:SendPartyMessage("ChangeLeader")
+            C_Timer.After(5, function()
+                if IsInGroup() then
+                    self:SendPartyMessage("LeaveMessage")
+                    C_Timer.After(1, function()
+                        LeaveParty()
+                        local fullname = self:NameFormat(name, realm)
+                        local times = InstanceSchedulerVariables.Users[fullname]
+                        if times then
+                            InstanceSchedulerVariables.Users[fullname] = times + 1
+                        else
+                            InstanceSchedulerVariables.Users[fullname] = 1
+                        end
+                        C_Timer.After(1, function()
+                            SetLegacyRaidDifficultyID(4)
+                            if #InstanceSchedulerVariables.Line > 0 then
+                                local name = InstanceSchedulerVariables.Line[1]
+                                table.remove(InstanceSchedulerVariables.Line, 1)
+                                InviteUnit(name)
+                            end
+                        end)
+                    end)
+                end
+            end)
+        else
+            C_Timer.After(1, function()
+                self:IntoInstanceSchedule()
+            end)
+        end
     end
 end
 
@@ -55,41 +106,3 @@ function InstanceScheduler:UpdateSchedule()
         end
     end
 end
-
-function InstanceScheduler:AddBlacklistSlash(str)
-    local fullName = str:gsub("^%s*(.-)%s*$", "%1")
-    for _,v in pairs(InstanceSchedulerBlacklist) do
-        if fullName == v then
-            DEFAULT_CHAT_FRAME:AddMessage(self.PrintPrefix..self.Messages.AlreadyInBlacklist)
-            return
-        end
-    end
-    InstanceSchedulerBlacklist:insert(fullName)
-    DEFAULT_CHAT_FRAME:AddMessage(self.PrintPrefix..self.Messages.AddBlacklistSuccess)
-end
-
-function InstanceScheduler:RemoveBlacklistSlash(str)
-    local fullName = str:gsub("^%s*(.-)%s*$", "%1")
-    for i,v in ipairs(InstanceSchedulerBlacklist) do
-        if fullName == v then
-            InstanceSchedulerBlacklist:remove(i)
-            DEFAULT_CHAT_FRAME:AddMessage(self.PrintPrefix..self.Messages.RemoveBlacklistSuccess)
-            return
-        end
-    end
-    DEFAULT_CHAT_FRAME:AddMessage(self.PrintPrefix..self.Messages.NotInBlacklist)
-end
-
-function InstanceScheduler:ListBlacklistSlash(str)
-    DEFAULT_CHAT_FRAME:AddMessage(self.Messages.ListBlacklist:format(#InstanceSchedulerBlacklist))
-    for i,v in ipairs(InstanceSchedulerBlacklist) do
-        DEFAULT_CHAT_FRAME:AddMessage(self.Messages.BlacklistFormat:format(i, v))
-    end
-end
-
-SlashCmdList["INSTANCESCHEDULERADDBLACKLIST"] = InstanceScheduler.AddBlacklistSlash
-SLASH_INSTANCESCHEDULERADDBLACKLIST1 = "/isadd"
-SlashCmdList["INSTANCESCHEDULERREMOVEBLACKLIST"] = InstanceScheduler.RemoveBlacklistSlash
-SLASH_INSTANCESCHEDULERREMOVEBLACKLIST1 = "/isrm"
-SlashCmdList["INSTANCESCHEDULERLISTBLACKLIST"] = InstanceScheduler.ListBlacklistSlash
-SLASH_INSTANCESCHEDULERLISTBLACKLIST1 = "/isls"

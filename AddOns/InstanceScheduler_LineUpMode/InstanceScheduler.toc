@@ -3,7 +3,7 @@
 ## Title-zhCN : 副本进度工具
 ## Notes-zhCN: 全自动化的副本进度处理工具
 ## Version: 0.0.1
-## SavedVariables: InstanceSchedulerBlacklist
+## SavedVariables: InstanceSchedulerVariables
 
 Core.lua
 Config.lua
