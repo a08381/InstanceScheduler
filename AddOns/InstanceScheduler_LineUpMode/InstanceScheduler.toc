@@ -5,6 +5,6 @@
 ## Version: 0.0.1
 ## SavedVariables: InstanceSchedulerVariables
 
-Core.lua
 Config.lua
 Interface.lua
+Core.lua

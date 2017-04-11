@@ -8,7 +8,7 @@
 
 function InstanceScheduler:SendPartyMessage(key, ...)
     local args = { ... }
-    local message = self:Messages[key]
+    local message = self.Messages[key]
     if #args > 0 then
         message = message:format(...)
     end
@@ -17,7 +17,7 @@ end
 
 function InstanceScheduler:SendWhisperMessage(key, name, ...)
     local args = { ... }
-    local message = self:Messages[key]
+    local message = self.Messages[key]
     if #args > 0 then
         message = message:format(...)
     end
@@ -79,7 +79,6 @@ function InstanceScheduler:IntoInstanceSchedule()
                             InstanceSchedulerVariables.Users[fullname] = 1
                         end
                         C_Timer.After(1, function()
-                            SetLegacyRaidDifficultyID(4)
                             if #InstanceSchedulerVariables.Line > 0 then
                                 local name = InstanceSchedulerVariables.Line[1]
                                 table.remove(InstanceSchedulerVariables.Line, 1)
@@ -100,9 +99,9 @@ end
 function InstanceScheduler:UpdateSchedule()
     local t = GetTime()
     if StaticPopup1:IsShown() and StaticPopup1Button1:GetText() == "取消" then
-        if t - self.TempTime > 1 then
+        if t - InstanceScheduler.TempTime > 1 then
             StaticPopup1Button1:Click()
-            self.TempTime = t
+            InstanceScheduler.TempTime = t
         end
     end
 end

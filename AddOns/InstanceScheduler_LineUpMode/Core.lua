@@ -6,42 +6,30 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-local _, InstanceScheduler = ...
-_G["InstanceScheduler"] = InstanceScheduler
+local frame = CreateFrame("Frame", "InstanceSchedulerFrame")
 
-local frame = CreateFrame("Frame", "InstanceScheduleFrame")
-
-frame:SetScript("OnEvent", function(self, event, ...)
-    local args = { ... }
-    if event == "VARIABLES_LOADED" then
-        if not InstanceSchedulerVariables then
-            InstanceSchedulerVariables =
-            {
-                Line = {},
-                Users = {},
-            }
-        end
-        self:UnregisterEvent("VARIABLES_LOADED")
-    elseif event == "CHAT_MSG_WHISPER" then
-        if args[1]:sub(1, 1) == "1" and args[2] ~= InstanceScheduler:NameFormat(UnitName("player")) then
+frame:SetScript("OnEvent", function(self, event, message, sender)
+    if event == "CHAT_MSG_WHISPER" then
+        if message:sub(1, 1) == "1" and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
             if IsInGroup() then
-                if not UnitInParty(args[2]) then
+                if not UnitInParty(sender) then
                     for i,v in ipairs(InstanceSchedulerVariables.Line) do
-                        if args[2] == v then
-                            InstanceScheduler:SendWhisperMessage("AlreadyInLine", args[2], i)
+                        if sender == v then
+                            InstanceScheduler:SendWhisperMessage("AlreadyInLine", sender, i)
                             return
                         end
                     end
-                    table.insert(InstanceSchedulerVariables.Line, args[2])
-                    InstanceScheduler:SendWhisperMessage("AddInLine", args[2])
+                    table.insert(InstanceSchedulerVariables.Line, sender)
+                    InstanceScheduler:SendWhisperMessage("AddInLine", sender)
                 end
             else
-                InviteUnit(args[2])
+                InviteUnit(sender)
             end
         end
     elseif event == "CHAT_MSG_PARTY" then
-        if args[1]:sub(1, 2) == "10" and args[2] ~= InstanceScheduler:NameFormat(UnitName("player")) then
+        if message:len() >= 2 and message:sub(1, 2) == "10" and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
             SetLegacyRaidDifficultyID(3)
+            InstanceScheduler:SendPartyMessage("ChangeDifficulty")
         end
     elseif event == "GROUP_ROSTER_UPDATE" then
         if IsInGroup() and GetNumGroupMembers() == 2 and UnitIsGroupLeader("player") and InstanceScheduler.InGroupPlayer ~= InstanceScheduler:NameFormat(UnitName("party1")) then
@@ -51,30 +39,43 @@ frame:SetScript("OnEvent", function(self, event, ...)
             local name = InstanceSchedulerVariables.Line[1]
             table.remove(InstanceSchedulerVariables.Line, 1)
             InviteUnit(name)
+        elseif not IsInGroup() then
+            if GetLegacyRaidDifficultyID() == 3 then
+                SetLegacyRaidDifficultyID(4)
+            end
         end
         InstanceScheduler.TempMembers = IsInGroup() and GetNumGroupMembers() or 0
+    elseif event == "VARIABLES_LOADED" then
+        if not InstanceSchedulerVariables then
+            InstanceSchedulerVariables =
+            {
+                Line = {},
+                Users = {},
+            }
+        end
+        self:UnregisterEvent("VARIABLES_LOADED")
     end
 end)
 
-if InstanceScheduler:AutoStart then
+frame:RegisterEvent("VARIABLES_LOADED")
+
+if InstanceScheduler.AutoStart then
     frame:RegisterEvent("CHAT_MSG_WHISPER")
     frame:RegisterEvent("CHAT_MSG_PARTY")
-    frame:RegisterEvent("CHAT_MSG_PARTY_LEADER")
     frame:RegisterEvent("GROUP_ROSTER_UPDATE")
     frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
 end
 
-local button = CreateFrame("Button", "InstanceScheduleButton")
+local button = CreateFrame("Button", "InstanceSchedulerButton")
 button:SetScript("OnClick", function(self)
     if InstanceScheduler.AutoStart then
         frame:UnregisterAllEvents()
         frame:SetScript("OnUpdate", nil)
         InstanceScheduler.AutoStart = false
-        DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler:PrintPrefix.."已禁用")
+        DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已禁用")
     else
         frame:RegisterEvent("CHAT_MSG_WHISPER")
         frame:RegisterEvent("CHAT_MSG_PARTY")
-        frame:RegisterEvent("CHAT_MSG_PARTY_LEADER")
         frame:RegisterEvent("GROUP_ROSTER_UPDATE")
         frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
         InstanceScheduler.AutoStart = true
