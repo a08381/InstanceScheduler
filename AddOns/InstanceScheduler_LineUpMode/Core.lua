@@ -35,13 +35,19 @@ frame:SetScript("OnEvent", function(self, event, message, sender)
         if IsInGroup() and GetNumGroupMembers() == 2 and UnitIsGroupLeader("player") and InstanceScheduler.InGroupPlayer ~= InstanceScheduler:NameFormat(UnitName("party1")) then
             InstanceScheduler.InGroupPlayer = InstanceScheduler:NameFormat(UnitName("party1"))
             InstanceScheduler:PartySchedule(0)
-        elseif not IsInGroup() and InstanceScheduler.TempMembers == 1 then
-            local name = InstanceSchedulerVariables.Line[1]
-            table.remove(InstanceSchedulerVariables.Line, 1)
-            InviteUnit(name)
         elseif not IsInGroup() then
+            if InstanceScheduler.InGroupPlayer ~= "" then
+                InstanceScheduler.InGroupPlayer = ""
+            end
             if GetLegacyRaidDifficultyID() == 3 then
                 SetLegacyRaidDifficultyID(4)
+            end
+            if InstanceScheduler.TempMembers == 1 or InstanceScheduler.TempMembers == 2 then
+                if #InstanceSchedulerVariables.Line > 0 then
+                    local name = InstanceSchedulerVariables.Line[1]
+                    table.remove(InstanceSchedulerVariables.Line, 1)
+                    InviteUnit(name)
+                end
             end
         end
         InstanceScheduler.TempMembers = IsInGroup() and GetNumGroupMembers() or 0

@@ -78,13 +78,6 @@ function InstanceScheduler:IntoInstanceSchedule()
                         else
                             InstanceSchedulerVariables.Users[fullname] = 1
                         end
-                        C_Timer.After(1, function()
-                            if #InstanceSchedulerVariables.Line > 0 then
-                                local name = InstanceSchedulerVariables.Line[1]
-                                table.remove(InstanceSchedulerVariables.Line, 1)
-                                InviteUnit(name)
-                            end
-                        end)
                     end)
                 end
             end)
