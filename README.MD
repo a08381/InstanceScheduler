@@ -16,7 +16,7 @@ _**请注意，您所能修改的东西只有`Config.lua`**_<br/>
 * `ResetComplete`为副本重置完毕后的回复
 * `ChangeDifficulty`为修改副本难度后的回复
 * `ChangeLeader`为给予队长后的回复
-* `LeaveMessage`为离开队伍前的回复<br/>
+* `LeaveMessage`为离开队伍前的回复
 
-<br/>进入游戏后，您可以用`/click InstanceSchedulerButton`来手动开关插件功能<br/><br/>
+进入游戏后，您可以用`/click InstanceSchedulerButton`来手动开关插件功能<br/><br/>
 _~~使用英雄榜远程遥控CD号功能开发中~~_
