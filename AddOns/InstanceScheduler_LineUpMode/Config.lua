@@ -12,6 +12,7 @@ _G["InstanceScheduler"] = InstanceScheduler
 InstanceScheduler.PrintPrefix = "|cff99ffffInstance Scheduler|r - "
 InstanceScheduler.InGroupPlayer = ""
 InstanceScheduler.TempTime = GetTime()
+InstanceScheduler.InGroupTime = GetTime()
 InstanceScheduler.TempMembers = 0
 
 InstanceScheduler.AutoStart = true

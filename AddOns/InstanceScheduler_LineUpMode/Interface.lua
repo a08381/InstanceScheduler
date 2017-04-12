@@ -41,6 +41,7 @@ function InstanceScheduler:PartySchedule(times)
         if UnitIsConnected("party1") then
             ResetInstances()
             self:SendPartyMessage("ResetComplete")
+            self.InGroupTime = GetTime()
             C_Timer.After(1, function()
                 self:IntoInstanceSchedule()
             end)
@@ -82,9 +83,15 @@ function InstanceScheduler:IntoInstanceSchedule()
                 end
             end)
         else
-            C_Timer.After(1, function()
-                self:IntoInstanceSchedule()
-            end)
+            if not UnitIsConnected("party1") then
+                LeaveParty()
+            elseif self.InGroupTime - GetTime() > 120 and #InstanceSchedulerVariables.Line > 0 then
+                LeaveParty()
+            else
+                C_Timer.After(1, function()
+                    self:IntoInstanceSchedule()
+                end)
+            end
         end
     end
 end
