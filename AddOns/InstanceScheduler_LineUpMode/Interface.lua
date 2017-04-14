@@ -24,6 +24,15 @@ function InstanceScheduler:SendWhisperMessage(key, name, ...)
     SendChatMessage(message, "WHISPER", nil, name)
 end
 
+function InstanceScheduler:SendGuildMessage(key, ...)
+    local args = { ... }
+    local message = self.Commands[key]
+    if #args > 0 then
+        message = message:format(...)
+    end
+    SendChatMessage(message, "GUILD")
+end
+
 function InstanceScheduler:NameFormat(name, realm, hide)
     local fullName = name
     if not realm or realm == "" then
@@ -34,6 +43,77 @@ function InstanceScheduler:NameFormat(name, realm, hide)
         fullName = fullName.."-"..realm
     end
     return fullName
+end
+
+function InstanceScheduler:ExtendsSavedInstance()
+    for i=1,GetNumSavedInstances() do
+        local a,_,_,_,_,b = GetSavedInstanceInfo(i)
+        for _,v in pairs(self.SavedInstance) do
+            if v==a and not b then
+                SetSavedInstanceExtend(i, true)
+            end
+        end
+    end
+end
+
+function InstanceScheduler:SwitchOnOrOff()
+    if InstanceScheduler.AutoStart then
+        frame:UnregisterAllEvents()
+        frame:SetScript("OnUpdate", nil)
+        InstanceScheduler.AutoStart = false
+        DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已禁用")
+    else
+        frame:RegisterEvent("CHAT_MSG_WHISPER")
+        frame:RegisterEvent("CHAT_MSG_PARTY")
+        frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+        frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
+        InstanceScheduler.AutoStart = true
+        DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已启用")
+    end
+end
+
+function InstanceScheduler:CommandInfo(str)
+    local stats = 0
+    local fps = GetFramerate()
+    local _,_,latencyHome,latencyWorld = GetNetStats()
+    if fps >= 30 then
+        stats = stats + 0
+    elseif fps >= 20 and fps < 30 then
+        stats = stats + 1
+    elseif fps >= 10 and fps < 20 then
+        stats = stats + 2
+    else
+        stats = stats + 3
+    end
+    if latencyHome < 150 then
+        stats = stats + 0
+    elseif latencyHome >= 150 and latencyHome < 300 then
+        stats = stats + 1
+    elseif latencyHome >= 300 and latencyHome < 500 then
+        stats = stats + 2
+    else
+        stats = stats + 3
+    end
+    if latencyWorld < 150 then
+        stats = stats + 0
+    elseif latencyWorld >= 150 and latencyWorld < 300 then
+        stats = stats + 1
+    elseif latencyWorld >= 300 and latencyWorld < 500 then
+        stats = stats + 2
+    else
+        stats = stats + 3
+    end
+    local statusText = InstanceScheduler.Commands.InfoWorst
+    if stats == 0 then
+        statusText = InstanceScheduler.Commands.InfoGreat
+    elseif stats == 1 then
+        statusText = InstanceScheduler.Commands.InfoGood
+    elseif stats == 2 then
+        statusText = InstanceScheduler.Commands.InfoNotbad
+    elseif stats == 3 then
+        statusText = InstanceScheduler.Commands.InfoBad
+    end
+    self:SendGuildMessage("CommandInfo", latencyHome, latencyWorld, fps, statusText)
 end
 
 function InstanceScheduler:PartySchedule(times)

@@ -31,6 +31,10 @@ frame:SetScript("OnEvent", function(self, event, message, sender)
             SetLegacyRaidDifficultyID(3)
             InstanceScheduler:SendPartyMessage("ChangeDifficulty")
         end
+    elseif event == "CHAT_MSG_GUILD" then
+        local CommandPrefix = InstanceScheduler.Commands.CommandPrefix
+        if message:len() >= CommandPrefix:len() and message:sub(1, CommandPrefix:len()) == CommandPrefix then
+        end
     elseif event == "GROUP_ROSTER_UPDATE" then
         if IsInGroup() and GetNumGroupMembers() == 2 and UnitIsGroupLeader("player") and InstanceScheduler.InGroupPlayer ~= InstanceScheduler:NameFormat(UnitName("party1")) then
             InstanceScheduler.InGroupPlayer = InstanceScheduler:NameFormat(UnitName("party1"))
@@ -64,6 +68,8 @@ frame:SetScript("OnEvent", function(self, event, message, sender)
 end)
 
 frame:RegisterEvent("VARIABLES_LOADED")
+frame:RegisterEvent("CHAT_MSG_GUILD")
+InstanceScheduler:ExtendsSavedInstance()
 
 if InstanceScheduler.AutoStart then
     frame:RegisterEvent("CHAT_MSG_WHISPER")
@@ -71,20 +77,3 @@ if InstanceScheduler.AutoStart then
     frame:RegisterEvent("GROUP_ROSTER_UPDATE")
     frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
 end
-
-local button = CreateFrame("Button", "InstanceSchedulerButton")
-button:SetScript("OnClick", function(self)
-    if InstanceScheduler.AutoStart then
-        frame:UnregisterAllEvents()
-        frame:SetScript("OnUpdate", nil)
-        InstanceScheduler.AutoStart = false
-        DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已禁用")
-    else
-        frame:RegisterEvent("CHAT_MSG_WHISPER")
-        frame:RegisterEvent("CHAT_MSG_PARTY")
-        frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-        frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
-        InstanceScheduler.AutoStart = true
-        DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已启用")
-    end
-end)
