@@ -10,6 +10,9 @@ local _, InstanceScheduler = ...
 _G["InstanceScheduler"] = InstanceScheduler
 
 InstanceScheduler.PrintPrefix = "|cff99ffffInstance Scheduler|r - "
+_G.BINDING_HEADER_INSTANCESCHEDULER = "Instance Scheduler"
+_G.BINDING_NAME_SWITCHON = "Switch On"
+
 InstanceScheduler.InGroupPlayer = ""
 InstanceScheduler.TempTime = GetTime()
 InstanceScheduler.InGroupTime = GetTime()

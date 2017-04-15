@@ -34,6 +34,10 @@ frame:SetScript("OnEvent", function(self, event, message, sender)
     elseif event == "CHAT_MSG_GUILD" then
         local CommandPrefix = InstanceScheduler.Commands.CommandPrefix
         if message:len() >= CommandPrefix:len() and message:sub(1, CommandPrefix:len()) == CommandPrefix then
+            local arg = message:sub(CommandPrefix:len() + 1, -1)
+            if arg:len() >= 4 and arg:sub(1, 4) == "info" then
+                InstanceScheduler:CommandInfo(arg:len()==4 and nil or arg:sub(5, -1))
+            end
         end
     elseif event == "GROUP_ROSTER_UPDATE" then
         if IsInGroup() and GetNumGroupMembers() == 2 and UnitIsGroupLeader("player") and InstanceScheduler.InGroupPlayer ~= InstanceScheduler:NameFormat(UnitName("party1")) then
@@ -69,7 +73,6 @@ end)
 
 frame:RegisterEvent("VARIABLES_LOADED")
 frame:RegisterEvent("CHAT_MSG_GUILD")
-InstanceScheduler:ExtendsSavedInstance()
 
 if InstanceScheduler.AutoStart then
     frame:RegisterEvent("CHAT_MSG_WHISPER")
@@ -77,3 +80,5 @@ if InstanceScheduler.AutoStart then
     frame:RegisterEvent("GROUP_ROSTER_UPDATE")
     frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
 end
+
+InstanceScheduler:ExtendsSavedInstance()

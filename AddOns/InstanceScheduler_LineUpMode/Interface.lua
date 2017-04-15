@@ -47,26 +47,26 @@ end
 
 function InstanceScheduler:ExtendsSavedInstance()
     for i=1,GetNumSavedInstances() do
-        local a,_,_,_,_,b = GetSavedInstanceInfo(i)
-        for _,v in pairs(self.SavedInstance) do
-            if v==a and not b then
+        local a,_,_,b,_,c = GetSavedInstanceInfo(i)
+        for _,v in pairs(self.SavedInstances) do
+            if v == a and b == 4 and not c then
                 SetSavedInstanceExtend(i, true)
             end
         end
     end
 end
 
-function InstanceScheduler:SwitchOnOrOff()
+function InstanceScheduler:SwitchOn()
     if InstanceScheduler.AutoStart then
-        frame:UnregisterAllEvents()
-        frame:SetScript("OnUpdate", nil)
+        InstanceSchedulerFrame:UnregisterAllEvents()
+        InstanceSchedulerFrame:SetScript("OnUpdate", nil)
         InstanceScheduler.AutoStart = false
         DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已禁用")
     else
-        frame:RegisterEvent("CHAT_MSG_WHISPER")
-        frame:RegisterEvent("CHAT_MSG_PARTY")
-        frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-        frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
+        InstanceSchedulerFrame:RegisterEvent("CHAT_MSG_WHISPER")
+        InstanceSchedulerFrame:RegisterEvent("CHAT_MSG_PARTY")
+        InstanceSchedulerFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
+        InstanceSchedulerFrame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
         InstanceScheduler.AutoStart = true
         DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已启用")
     end

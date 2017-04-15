@@ -8,3 +8,4 @@
 Config.lua
 Interface.lua
 Core.lua
+Bindings.xml
