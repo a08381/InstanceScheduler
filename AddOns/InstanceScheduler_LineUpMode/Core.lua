@@ -67,6 +67,7 @@ frame:SetScript("OnEvent", function(self, event, message, sender)
                 Users = {},
             }
         end
+        InstanceScheduler:ExtendsSavedInstance()
         self:UnregisterEvent("VARIABLES_LOADED")
     end
 end)
@@ -80,5 +81,3 @@ if InstanceScheduler.AutoStart then
     frame:RegisterEvent("GROUP_ROSTER_UPDATE")
     frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
 end
-
-InstanceScheduler:ExtendsSavedInstance()

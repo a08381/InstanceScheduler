@@ -38,7 +38,7 @@ InstanceScheduler.Messages =
     ResetComplete = "副本已重置，请进本~~~",
     ChangeDifficulty = "已将副本难度改为10人~~~",
     ChangeLeader = "已将队长转交，刷无敌请自行修改难度为英雄哦~~~",
-    LeaveMessage = "服务完成~~祝您刷出想要的坐骑~~~",
+    LeaveMessage = "其他副本请不要修改难度！！祝您刷出想要的坐骑~~~",
 }
 InstanceScheduler.Commands =
 {

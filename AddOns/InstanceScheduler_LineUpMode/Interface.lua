@@ -47,9 +47,9 @@ end
 
 function InstanceScheduler:ExtendsSavedInstance()
     for i=1,GetNumSavedInstances() do
-        local a,_,_,b,_,c = GetSavedInstanceInfo(i)
+        local a,_,_,_,_,c = GetSavedInstanceInfo(i)
         for _,v in pairs(self.SavedInstances) do
-            if v == a and b == 4 and not c then
+            if v == a and not c then
                 SetSavedInstanceExtend(i, true)
             end
         end
@@ -129,7 +129,7 @@ function InstanceScheduler:PartySchedule(times)
             if times >= 6 then
                 local name,realm = UnitName("party1")
                 local s = self:NameFormat(name, realm, true)
-                UninviteUnit(s)
+                LeaveParty()
                 self:SendWhisperMessage("NetProblem", s)
             else
                 C_Timer.After(1, function()
@@ -147,7 +147,7 @@ function InstanceScheduler:IntoInstanceSchedule()
             local s = self:NameFormat(name, realm, true)
             PromoteToLeader(s)
             self:SendPartyMessage("ChangeLeader")
-            C_Timer.After(5, function()
+            C_Timer.After(1, function()
                 if IsInGroup() then
                     self:SendPartyMessage("LeaveMessage")
                     C_Timer.After(1, function()
