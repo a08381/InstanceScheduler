@@ -40,7 +40,9 @@ frame:SetScript("OnEvent", function(self, event, message, sender)
             end
         end
     elseif event == "GROUP_ROSTER_UPDATE" then
-        if IsInGroup() and GetNumGroupMembers() == 2 and UnitIsGroupLeader("player") and InstanceScheduler.InGroupPlayer ~= InstanceScheduler:NameFormat(UnitName("party1")) then
+        if InstanceScheduler.TempTime == 0 then
+            InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.AutoStart)
+        elseif IsInGroup() and GetNumGroupMembers() == 2 and UnitIsGroupLeader("player") and InstanceScheduler.InGroupPlayer ~= InstanceScheduler:NameFormat(UnitName("party1")) then
             InstanceScheduler.InGroupPlayer = InstanceScheduler:NameFormat(UnitName("party1"))
             InstanceScheduler:PartySchedule(0)
         elseif not IsInGroup() then
@@ -67,7 +69,6 @@ frame:SetScript("OnEvent", function(self, event, message, sender)
                 Users = {},
             }
         end
-        InstanceScheduler:ExtendsSavedInstance()
         self:UnregisterEvent("VARIABLES_LOADED")
     end
 end)
