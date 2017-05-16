@@ -167,7 +167,7 @@ function InstanceScheduler:IntoInstanceSchedule()
         else
             if not UnitIsConnected("party1") then
                 LeaveParty()
-            elseif self.InGroupTime - GetTime() > 120 and #InstanceSchedulerVariables.Line > 0 then
+            elseif GetTime() - self.InGroupTime > 120 and #InstanceSchedulerVariables.Line > 0 then
                 LeaveParty()
             else
                 C_Timer.After(1, function()
