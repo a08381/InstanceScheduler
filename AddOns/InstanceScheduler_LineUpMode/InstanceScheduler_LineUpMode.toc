@@ -2,10 +2,10 @@
 ## Title : Instance Scheduler
 ## Title-zhCN : 副本进度工具
 ## Notes-zhCN: 全自动化的副本进度处理工具
-## Version: 0.0.1
+## Version: 0.0.5
 ## SavedVariables: InstanceSchedulerVariables
 
-Core.lua
-Interface.lua
 Config.lua
+Interface.lua
+Core.lua
 Bindings.xml
