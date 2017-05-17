@@ -66,6 +66,7 @@ function InstanceScheduler:SwitchOn()
     else
         InstanceSchedulerFrame:RegisterEvent("CHAT_MSG_WHISPER")
         InstanceSchedulerFrame:RegisterEvent("CHAT_MSG_PARTY")
+        InstanceSchedulerFrame:RegisterEvent("PARTY_INVITE_REQUEST")
         InstanceSchedulerFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
         InstanceSchedulerFrame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
         InstanceScheduler.AutoStart = true
@@ -118,6 +119,18 @@ function InstanceScheduler:CommandInfo(str)
     self:SendGuildMessage("CommandInfo", latencyHome, latencyWorld, fps, statusText)
 end
 
+function InstanceScheduler:InviteSchedule(times)
+    if IsInGroup() and GetNumGroupMembers() == 1 then
+        if times >= 5 then
+            LeaveParty()
+        else
+            C_Timer.After(1, function()
+                self:InviteSchedule(times+1)
+            end)
+        end
+    end
+end
+
 function InstanceScheduler:PartySchedule(times)
     if IsInGroup() then
         if UnitIsConnected("party1") then
@@ -167,7 +180,7 @@ function InstanceScheduler:IntoInstanceSchedule()
         else
             if not UnitIsConnected("party1") then
                 LeaveParty()
-            elseif GetTime() - self.InGroupTime > 120 and #InstanceSchedulerVariables.Line > 0 then
+            elseif GetTime() - self.InGroupTime > 60 and #InstanceSchedulerVariables.Line > 0 then
                 LeaveParty()
             else
                 C_Timer.After(1, function()
