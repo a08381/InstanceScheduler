@@ -55,12 +55,14 @@ function InstanceScheduler:IntoInstanceSchedule()
                     C_Timer.After(1, function()
                         LeaveParty()
                         local fullname = self:NameFormat(name, realm)
-                        local times = InstanceSchedulerVariables.Users[fullname]
+                        local realm = self:GetRealm(fullname)
+                        local times = InstanceSchedulerVariables.Users[realm][fullname]
                         if times then
-                            InstanceSchedulerVariables.Users[fullname] = times + 1
+                            InstanceSchedulerVariables.Users[realm][fullname] = times + 1
                         else
-                            InstanceSchedulerVariables.Users[fullname] = 1
+                            InstanceSchedulerVariables.Users[realm][fullname] = 1
                         end
+                        InstanceSchedulerVariables.Total = InstanceSchedulerVariables.Total + 1
                     end)
                 end
             end)

@@ -45,6 +45,10 @@ function InstanceScheduler:NameFormat(name, realm, hide)
     return fullName
 end
 
+function InstanceScheduler:GetRealm(fullName)
+    return fullName:sub(fullName:find("-") + 1, -1)
+end
+
 function InstanceScheduler:ExtendsSavedInstance(stats)
     for i=1,GetNumSavedInstances() do
         local a,_,_,_,_,c = GetSavedInstanceInfo(i)
