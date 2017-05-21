@@ -61,11 +61,11 @@ function InstanceScheduler:ExtendsSavedInstance(stats)
 end
 
 function InstanceScheduler:SwitchOn()
-    if InstanceScheduler.AutoStart then
+    if InstanceScheduler.Status then
         InstanceSchedulerFrame:UnregisterAllEvents()
         InstanceSchedulerFrame:SetScript("OnUpdate", nil)
-        InstanceScheduler.AutoStart = false
-        InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.AutoStart)
+        InstanceScheduler.Status = false
+        InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.Status)
         DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已禁用")
     else
         InstanceSchedulerFrame:RegisterEvent("CHAT_MSG_WHISPER")
@@ -73,8 +73,8 @@ function InstanceScheduler:SwitchOn()
         InstanceSchedulerFrame:RegisterEvent("PARTY_INVITE_REQUEST")
         InstanceSchedulerFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
         InstanceSchedulerFrame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
-        InstanceScheduler.AutoStart = true
-        InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.AutoStart)
+        InstanceScheduler.Status = true
+        InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.Status)
         DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已启用")
     end
 end

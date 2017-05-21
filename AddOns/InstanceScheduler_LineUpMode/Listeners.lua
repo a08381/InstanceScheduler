@@ -28,7 +28,7 @@ InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
                 InviteUnit(sender)
                 table.remove(InstanceSchedulerVariables.Line, 1)
             else
-                InstanceScheduler:SendWhisperMessage("AddInLine", sender)
+                InstanceScheduler:SendWhisperMessage("AddInLine", sender, #InstanceSchedulerVariables.Line)
             end
         end
     end
@@ -57,6 +57,23 @@ InstanceScheduler["PARTY_INVITE_REQUEST"] = function(...)
 end
 
 InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
+    if InstanceScheduler.Status then
+        if GetPlayerMapPosition("player") and not InstanceScheduler.TempStatus then
+            InstanceSchedulerFrame:RegisterEvent("CHAT_MSG_WHISPER")
+            InstanceSchedulerFrame:RegisterEvent("CHAT_MSG_PARTY")
+            InstanceSchedulerFrame:RegisterEvent("PARTY_INVITE_REQUEST")
+            InstanceSchedulerFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
+            InstanceSchedulerFrame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
+            InstanceScheduler.TempStatus = true
+            InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.TempStatus)
+        elseif InstanceScheduler.TempStatus and not GetPlayerMapPosition("player") then
+            InstanceSchedulerFrame:UnregisterAllEvents()
+            InstanceSchedulerFrame:SetScript("OnUpdate", nil)
+            InstanceScheduler.TempStatus = false
+            InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.TempStatus)
+            return
+        end
+    end
     if IsInGroup() then
         if GetNumGroupMembers() == 1 then
             InstanceScheduler:InviteSchedule(0)
@@ -99,7 +116,7 @@ InstanceScheduler["VARIABLES_LOADED"] = function(...)
         local temp = InstanceSchedulerVariables.Users
         InstanceSchedulerVariables.Users = {}
         local total = 0
-        for k,v in pairs(temp) do
+        for k, v in pairs(temp) do
             local realm = InstanceScheduler:GetRealm(k)
             if not InstanceSchedulerVariables.Users[realm] then
                 InstanceSchedulerVariables.Users[realm] = {}
@@ -110,7 +127,7 @@ InstanceScheduler["VARIABLES_LOADED"] = function(...)
         InstanceSchedulerVariables.Total = total
     end
     frame:UnregisterEvent("VARIABLES_LOADED")
-    if InstanceScheduler.AutoStart then
+    if InstanceScheduler.Status then
         frame:RegisterEvent("CHAT_MSG_WHISPER")
         frame:RegisterEvent("CHAT_MSG_PARTY")
         frame:RegisterEvent("PARTY_INVITE_REQUEST")
