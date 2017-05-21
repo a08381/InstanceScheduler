@@ -1,5 +1,5 @@
 <Bindings>
-	<Binding name="SWITCHON" header="INSTANCESCHEDULER" category="ADDONS">
-		InstanceScheduler:SwitchOn()
-	</Binding>
+    <Binding name="SWITCHON" header="INSTANCESCHEDULER" category="ADDONS">
+        InstanceScheduler:SwitchOn()
+    </Binding>
 </Bindings>
