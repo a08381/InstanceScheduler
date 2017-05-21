@@ -56,6 +56,9 @@ function InstanceScheduler:IntoInstanceSchedule()
                         LeaveParty()
                         local fullname = self:NameFormat(name, realm)
                         local realm = self:GetRealm(fullname)
+                        if not InstanceSchedulerVariables.Users[realm] then
+                            InstanceSchedulerVariables.Users[realm] = {}
+                        end
                         local times = InstanceSchedulerVariables.Users[realm][fullname]
                         if times then
                             InstanceSchedulerVariables.Users[realm][fullname] = times + 1
