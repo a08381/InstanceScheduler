@@ -57,18 +57,19 @@ InstanceScheduler["PARTY_INVITE_REQUEST"] = function(...)
 end
 
 InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
+    local frame = ...
     if InstanceScheduler.Status then
         if GetPlayerMapPosition("player") and not InstanceScheduler.TempStatus then
-            InstanceSchedulerFrame:RegisterEvent("CHAT_MSG_WHISPER")
-            InstanceSchedulerFrame:RegisterEvent("CHAT_MSG_PARTY")
-            InstanceSchedulerFrame:RegisterEvent("PARTY_INVITE_REQUEST")
-            InstanceSchedulerFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
-            InstanceSchedulerFrame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
+            frame:RegisterEvent("CHAT_MSG_WHISPER")
+            frame:RegisterEvent("CHAT_MSG_PARTY")
+            frame:RegisterEvent("PARTY_INVITE_REQUEST")
+            frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+            frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
             InstanceScheduler.TempStatus = true
             InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.TempStatus)
         elseif InstanceScheduler.TempStatus and not GetPlayerMapPosition("player") then
-            InstanceSchedulerFrame:UnregisterAllEvents()
-            InstanceSchedulerFrame:SetScript("OnUpdate", nil)
+            frame:UnregisterAllEvents()
+            frame:SetScript("OnUpdate", nil)
             InstanceScheduler.TempStatus = false
             InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.TempStatus)
             return
