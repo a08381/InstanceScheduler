@@ -7,7 +7,7 @@
 --
 
 InstanceScheduler.Status = InstanceScheduler.AutoStart
-InstanceScheduler.TempStatus = InstanceScheduler.Status
+--InstanceScheduler.TempStatus = InstanceScheduler.Status
 
 local frame = CreateFrame("Frame", "InstanceSchedulerFrame")
 
