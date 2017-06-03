@@ -10,14 +10,13 @@ local AddonName, InstanceScheduler = ...
 
 InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
     local _, message, sender = ...
-    if GetPlayerMapPosition("player") then
-        if message:sub(1, 1) == "1" and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
+    if GetPlayerMapPosition("player") and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
+        if message:sub(1, 1) == "1" then
             for i, v in ipairs(InstanceSchedulerVariables.Line) do
                 if sender == v then
                     InstanceScheduler:SendWhisperMessage("AlreadyInLine", sender, i)
                     if not IsInGroup() and #InstanceSchedulerVariables.Line > 0 then
                         local name = InstanceSchedulerVariables.Line[1]
-                        table.remove(InstanceSchedulerVariables.Line, 1)
                         InviteUnit(name)
                     end
                     return
@@ -32,6 +31,17 @@ InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
                     InstanceScheduler:SendWhisperMessage("AddInLine", sender, #InstanceSchedulerVariables.Line)
                 end
             end
+        elseif message:sub(1, 1) == "0" then
+            for i, v in ipairs(InstanceSchedulerVariables.Line) do
+                if sender == v then
+                    table.remove(InstanceSchedulerVariables.Line, i)
+                    InstanceScheduler:SendWhisperMessage("RemoveFromLine", sender)
+                    return
+                end
+            end
+            InstanceScheduler:SendWhisperMessage("NotInLine", sender)
+        else
+            InstanceScheduler:SendWhisperMessage("AutoRepeat", sender)
         end
     end
 end
@@ -84,9 +94,15 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
             if GetNumGroupMembers() == 1 then
                 InstanceScheduler:InviteSchedule(0)
             end
-            if GetNumGroupMembers() == 2 and UnitIsGroupLeader("player") and InstanceScheduler.InGroupPlayer ~= InstanceScheduler:NameFormat(UnitName("party1")) then
-                InstanceScheduler.InGroupPlayer = InstanceScheduler:NameFormat(UnitName("party1"))
-                InstanceScheduler:PartySchedule(0)
+            if GetNumGroupMembers() == 2 and UnitIsGroupLeader("player") then
+                local party1 = InstanceScheduler:NameFormat(UnitName("party1"))
+                if InstanceScheduler.TempMembers == 1 and party1 == InstanceSchedulerVariables.Line[1] then
+                    table.remove(InstanceSchedulerVariables.Line, 1)
+                end
+                if InstanceScheduler.InGroupPlayer ~= party1 then
+                    InstanceScheduler.InGroupPlayer = party1
+                    InstanceScheduler:PartySchedule(0)
+                end
             end
         else
             if InstanceScheduler.InGroupPlayer ~= "" then
@@ -98,7 +114,6 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
             if InstanceScheduler.TempMembers == 1 or InstanceScheduler.TempMembers == 2 then
                 if #InstanceSchedulerVariables.Line > 0 then
                     local name = InstanceSchedulerVariables.Line[1]
-                    table.remove(InstanceSchedulerVariables.Line, 1)
                     InviteUnit(name)
                 end
             end

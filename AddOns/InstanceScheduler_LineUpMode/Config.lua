@@ -31,8 +31,12 @@ InstanceScheduler.SavedInstances =
 }
 InstanceScheduler.Messages =
 {
+    AutoRepeat = "自动回复balabala...",
+
     AddInLine = "当前队伍里有其他人哦，已将您添加到队列，请耐心等待哦~~~",
     AlreadyInLine = "您已经加入队列了哦，当前排在第 %d 名，请耐心等待~~~",
+    RemoveFromLine = "您已被移出了队列，感谢您的支持",
+    NotInLine = "您当前不在队列中哦，M 我打 1 即可加入队列了哦",
     NetProblem = "很抱歉，由于某些不可抗力因素，已将您移除队伍，请尝试重新申请~~~",
 
     ResetComplete = "副本已重置，请进本~~~",
