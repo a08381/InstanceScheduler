@@ -1,10 +1,12 @@
 #CD进度插件 InstanceScheduler
 这个插件是用于帮助使用进度的玩家自动化的插件
 ##队长模式 LeaderMode （暂无法正常使用）
-下载后将 InstanceScheduler_LeaderMode 放入 Addons 目录即可<br/>
+下载后将 `Addons` 目录里的 `InstanceScheduler_LeaderMode` 放入游戏的 `Interface\Addons` 目录内即可<br/>
 ~~_使用方法未完成_~~
 ##排队模式 LineUpMode
-下载后将 InstanceScheduler_LineUpMode 放入 Addons 目录即可
+**下载后将 `Addons` 目录里的 `InstanceScheduler_LineUpMode` 放入游戏的 `Interface\Addons` 目录内即可**<br/>
+**下载后将 `Addons` 目录里的 `InstanceScheduler_LineUpMode` 放入游戏的 `Interface\Addons` 目录内即可**<br/>
+**下载后将 `Addons` 目录里的 `InstanceScheduler_LineUpMode` 放入游戏的 `Interface\Addons` 目录内即可**<br/>
 ###使用方法
 **请注意，您所能修改的东西只有 `Config.lua` **<br/>
 _特别的，请不要直接使用系统自带记事本打开，推荐使用 [NotePad++](https://notepad-plus-plus.org/download/)_
