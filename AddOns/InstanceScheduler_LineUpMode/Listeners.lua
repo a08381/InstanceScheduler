@@ -91,14 +91,14 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
     end
     if InstanceScheduler.TempStatus then
         if IsInGroup() then
-            if GetNumGroupMembers() == 1 then
+            if InstanceScheduler.TempMembers == 0 and GetNumGroupMembers() == 1 then
+                if party1 == InstanceSchedulerVariables.Line[1] then
+                    table.remove(InstanceSchedulerVariables.Line, 1)
+                end
                 InstanceScheduler:InviteSchedule(0)
             end
             if GetNumGroupMembers() == 2 and UnitIsGroupLeader("player") then
                 local party1 = InstanceScheduler:NameFormat(UnitName("party1"))
-                if InstanceScheduler.TempMembers == 1 and party1 == InstanceSchedulerVariables.Line[1] then
-                    table.remove(InstanceSchedulerVariables.Line, 1)
-                end
                 if InstanceScheduler.InGroupPlayer ~= party1 then
                     InstanceScheduler.InGroupPlayer = party1
                     InstanceScheduler:PartySchedule(0)
