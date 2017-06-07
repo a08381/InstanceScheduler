@@ -18,6 +18,7 @@ InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
                     if not IsInGroup() and #InstanceSchedulerVariables.Line > 0 then
                         local name = InstanceSchedulerVariables.Line[1]
                         InviteUnit(name)
+                        table.remove(InstanceSchedulerVariables.Line, 1)
                     end
                     return
                 end
@@ -92,16 +93,19 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
     if InstanceScheduler.TempStatus then
         if IsInGroup() then
             if InstanceScheduler.TempMembers == 0 and GetNumGroupMembers() == 1 then
-                if party1 == InstanceSchedulerVariables.Line[1] then
-                    table.remove(InstanceSchedulerVariables.Line, 1)
-                end
                 InstanceScheduler:InviteSchedule(0)
             end
-            if GetNumGroupMembers() == 2 and UnitIsGroupLeader("player") then
+            if GetNumGroupMembers() == 2 and InstanceScheduler.TempMembers == 1 and UnitIsGroupLeader("player") then
                 local party1 = InstanceScheduler:NameFormat(UnitName("party1"))
                 if InstanceScheduler.InGroupPlayer ~= party1 then
                     InstanceScheduler.InGroupPlayer = party1
                     InstanceScheduler:PartySchedule(0)
+                end
+            end
+            if GetNumGroupMembers() >= 3 then
+                for i = GetNumGroupMembers() - 1, 2 do
+                    local name = InstanceScheduler:NameFormat(UnitName("party" .. i), true)
+                    UninviteUnit(name, "InstanceSchedulerError")
                 end
             end
         else
@@ -111,10 +115,11 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
             if GetLegacyRaidDifficultyID() == 3 then
                 SetLegacyRaidDifficultyID(4)
             end
-            if InstanceScheduler.TempMembers == 1 or InstanceScheduler.TempMembers == 2 then
+            if InstanceScheduler.TempMembers >= 1 then
                 if #InstanceSchedulerVariables.Line > 0 then
                     local name = InstanceSchedulerVariables.Line[1]
                     InviteUnit(name)
+                    table.remove(InstanceSchedulerVariables.Line, 1)
                 end
             end
         end
