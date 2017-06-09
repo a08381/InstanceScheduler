@@ -49,7 +49,7 @@ function InstanceScheduler:IntoInstanceSchedule()
             local s = self:NameFormat(name, realm, true)
             PromoteToLeader(s)
             self:SendPartyMessage("ChangeLeader")
-            C_Timer.After(4, function()
+            C_Timer.After(1, function()
                 if IsInGroup() then
                     self:SendPartyMessage("LeaveMessage")
                     C_Timer.After(1, function()

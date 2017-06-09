@@ -20,7 +20,8 @@ InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
             end
             if not UnitInParty(sender) then
                 table.insert(InstanceSchedulerVariables.Line, sender)
-                if InstanceSchedulerVariables.Line[1] == sender and not IsInGroup() then
+                if InstanceSchedulerVariables.Line[1] == sender and InstanceScheduler.InGroupPlayer == "" and not IsInGroup() then
+                    InstanceScheduler.InGroupPlayer = sender
                     InviteUnit(sender)
                     table.remove(InstanceSchedulerVariables.Line, 1)
                 else
@@ -92,10 +93,7 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
             end
             if GetNumGroupMembers() == 2 and InstanceScheduler.TempMembers == 1 and UnitIsGroupLeader("player") then
                 local party1 = InstanceScheduler:NameFormat(UnitName("party1"))
-                if InstanceScheduler.InGroupPlayer ~= party1 then
-                    InstanceScheduler.InGroupPlayer = party1
-                    InstanceScheduler:PartySchedule(0)
-                end
+                InstanceScheduler:PartySchedule(0)
             end
             if GetNumGroupMembers() >= 3 and InstanceScheduler.TempMembers < GetNumGroupMembers() then
                 for i = GetNumGroupMembers() - 1, 2 do
