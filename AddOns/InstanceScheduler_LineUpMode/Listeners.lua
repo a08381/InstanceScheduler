@@ -102,10 +102,12 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
                     InstanceScheduler:PartySchedule(0)
                 end
             end
-            if GetNumGroupMembers() >= 3 then
+            if GetNumGroupMembers() >= 3 and InstanceScheduler.TempMembers < GetNumGroupMembers() then
                 for i = GetNumGroupMembers() - 1, 2 do
-                    local name = InstanceScheduler:NameFormat(UnitName("party" .. i), true)
-                    UninviteUnit(name, "InstanceSchedulerError")
+                    local name, realm = UnitName("party" .. i)
+                    local fullname = InstanceScheduler:NameFormat(name, realm, true)
+                    UninviteUnit(fullname)
+                    InstanceScheduler:SendWhisperMessage("NetProblem", fullname)
                 end
             end
         else
