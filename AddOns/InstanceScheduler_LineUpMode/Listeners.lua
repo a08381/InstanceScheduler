@@ -15,11 +15,6 @@ InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
             for i, v in ipairs(InstanceSchedulerVariables.Line) do
                 if sender == v then
                     InstanceScheduler:SendWhisperMessage("AlreadyInLine", sender, i)
-                    if not IsInGroup() and #InstanceSchedulerVariables.Line > 0 then
-                        local name = InstanceSchedulerVariables.Line[1]
-                        InviteUnit(name)
-                        table.remove(InstanceSchedulerVariables.Line, 1)
-                    end
                     return
                 end
             end
