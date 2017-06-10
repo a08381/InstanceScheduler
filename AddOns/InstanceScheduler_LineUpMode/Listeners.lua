@@ -92,7 +92,6 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
                 InstanceScheduler:InviteSchedule(0)
             end
             if GetNumGroupMembers() == 2 and InstanceScheduler.TempMembers == 1 and UnitIsGroupLeader("player") then
-                local party1 = InstanceScheduler:NameFormat(UnitName("party1"))
                 InstanceScheduler:PartySchedule(0)
             end
             if GetNumGroupMembers() >= 3 and InstanceScheduler.TempMembers < GetNumGroupMembers() then
