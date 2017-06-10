@@ -18,7 +18,7 @@ InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
                     return
                 end
             end
-            if not UnitInParty(sender) then
+            if not UnitInParty(sender) and InstanceScheduler.InGroupPlayer ~= sender then
                 table.insert(InstanceSchedulerVariables.Line, sender)
                 if InstanceSchedulerVariables.Line[1] == sender and InstanceScheduler.InGroupPlayer == "" and not IsInGroup() then
                     InstanceScheduler.InGroupPlayer = sender
