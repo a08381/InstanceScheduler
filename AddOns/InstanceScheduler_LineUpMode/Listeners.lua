@@ -110,9 +110,10 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
             if GetLegacyRaidDifficultyID() == 3 then
                 SetLegacyRaidDifficultyID(4)
             end
-            if InstanceScheduler.TempMembers >= 1 then
+            if InstanceScheduler.TempMembers >= 1 and InstanceScheduler.InGroupPlayer == "" then
                 if #InstanceSchedulerVariables.Line > 0 then
                     local name = InstanceSchedulerVariables.Line[1]
+                    InstanceScheduler.InGroupPlayer = name
                     InviteUnit(name)
                     table.remove(InstanceSchedulerVariables.Line, 1)
                 end
