@@ -29,10 +29,9 @@ function InstanceScheduler:PartySchedule(times)
             end)
         else
             if times >= 6 then
-                local name, realm = UnitName("party1")
-                local fullname = self:NameFormat(name, realm, true)
-                UninviteUnit(fullname)
-                self:SendWhisperMessage("NetProblem", fullname)
+                local s = self:NameFormat(UnitName("party1"))
+                LeaveParty()
+                self:SendWhisperMessage("NetProblem", s)
             else
                 C_Timer.After(1, function()
                     self:PartySchedule(times+1)
