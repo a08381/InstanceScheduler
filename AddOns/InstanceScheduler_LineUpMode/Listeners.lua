@@ -15,6 +15,12 @@ InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
             for i, v in ipairs(InstanceSchedulerVariables.Line) do
                 if sender == v then
                     InstanceScheduler:SendWhisperMessage("AlreadyInLine", sender, i)
+                    if InstanceScheduler.InGroupPlayer == "" and not IsInGroup() then
+                        local s = InstanceSchedulerVariables.Line[1]
+                        InstanceScheduler.InGroupPlayer = s
+                        InviteUnit(s)
+                        table.remove(InstanceSchedulerVariables.Line, 1)
+                    end
                     return
                 end
             end
@@ -26,6 +32,12 @@ InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
                     table.remove(InstanceSchedulerVariables.Line, 1)
                 else
                     InstanceScheduler:SendWhisperMessage("AddInLine", sender, #InstanceSchedulerVariables.Line)
+                    if InstanceScheduler.InGroupPlayer == "" and not IsInGroup() then
+                        local s = InstanceSchedulerVariables.Line[1]
+                        InstanceScheduler.InGroupPlayer = s
+                        InviteUnit(s)
+                        table.remove(InstanceSchedulerVariables.Line, 1)
+                    end
                 end
             end
         elseif message:sub(1, 1) == "0" then
