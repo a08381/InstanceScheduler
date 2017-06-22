@@ -15,32 +15,14 @@ InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
             for i, v in ipairs(InstanceSchedulerVariables.Line) do
                 if sender == v then
                     InstanceScheduler:SendWhisperMessage("AlreadyInLine", sender, i)
-                    if InstanceScheduler.InGroupPlayer == "" and not IsInGroup() then
-                        local s = InstanceSchedulerVariables.Line[1]
-                        InstanceScheduler.InGroupPlayer = s
-                        InviteUnit(s)
-                        table.remove(InstanceSchedulerVariables.Line, 1)
-                    end
                     return
                 end
             end
             if not UnitInParty(sender) and InstanceScheduler.InGroupPlayer ~= sender then
                 table.insert(InstanceSchedulerVariables.Line, sender)
-                if InstanceSchedulerVariables.Line[1] == sender and InstanceScheduler.InGroupPlayer == "" and not IsInGroup() then
-                    InstanceScheduler.InGroupPlayer = sender
-                    InviteUnit(sender)
-                    table.remove(InstanceSchedulerVariables.Line, 1)
-                else
-                    InstanceScheduler:SendWhisperMessage("AddInLine", sender, #InstanceSchedulerVariables.Line)
-                    if InstanceScheduler.InGroupPlayer == "" and not IsInGroup() then
-                        local s = InstanceSchedulerVariables.Line[1]
-                        InstanceScheduler.InGroupPlayer = s
-                        InviteUnit(s)
-                        table.remove(InstanceSchedulerVariables.Line, 1)
-                    end
-                end
+                InstanceScheduler:SendWhisperMessage("AddInLine", sender, #InstanceSchedulerVariables.Line)
             end
-        elseif message:sub(1, 1) == "0" then
+        elseif message:sub(1, 1) == "0" and InstanceScheduler.InGroupPlayer ~= sender then
             for i, v in ipairs(InstanceSchedulerVariables.Line) do
                 if sender == v then
                     table.remove(InstanceSchedulerVariables.Line, i)
@@ -121,14 +103,6 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
             if GetLegacyRaidDifficultyID() == 3 then
                 SetLegacyRaidDifficultyID(4)
             end
-            if InstanceScheduler.TempMembers >= 1 and InstanceScheduler.InGroupPlayer == "" then
-                if #InstanceSchedulerVariables.Line > 0 then
-                    local name = InstanceSchedulerVariables.Line[1]
-                    InstanceScheduler.InGroupPlayer = name
-                    InviteUnit(name)
-                    table.remove(InstanceSchedulerVariables.Line, 1)
-                end
-            end
         end
         InstanceScheduler.TempMembers = IsInGroup() and GetNumGroupMembers() or 0
     end
@@ -159,6 +133,8 @@ InstanceScheduler["VARIABLES_LOADED"] = function(...)
             total = total + v
         end
         InstanceSchedulerVariables.Total = total
+    elseif InstanceSchedulerVariables ~= ver then
+        InstanceSchedulerVariables.Version = ver
     end
     frame:UnregisterEvent("VARIABLES_LOADED")
     if InstanceScheduler.Status then

@@ -84,6 +84,17 @@ end
 
 function InstanceScheduler:UpdateSchedule()
     local t = GetTime()
+    if t - InstanceScheduler.InviteSchedulerTempTime > 2 then
+        InstanceScheduler.InviteSchedulerTempTime = t
+        if InstanceScheduler.InGroupPlayer == "" and not IsInGroup() then
+            if #InstanceSchedulerVariables.Line > 0 and GetPlayerMapPosition("player") then
+                local sender = InstanceSchedulerVariables.Line[1]
+                InstanceScheduler.InGroupPlayer = sender
+                InviteUnit(sender)
+                table.remove(InstanceSchedulerVariables.Line, 1)
+            end
+        end
+    end
     if StaticPopup1:IsShown() and StaticPopup1Button1:GetText() == "取消" then
         if t - InstanceScheduler.TempTime > 1 then
             StaticPopup1Button1:Click()

@@ -15,6 +15,7 @@ _G.BINDING_NAME_SWITCHON = "Switch On"
 
 InstanceScheduler.InGroupPlayer = ""
 InstanceScheduler.TempTime = GetTime()
+InstanceScheduler.InviteSchedulerTempTime = GetTime()
 InstanceScheduler.InGroupTime = 0
 InstanceScheduler.TempMembers = 0
 
