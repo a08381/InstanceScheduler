@@ -12,7 +12,7 @@ function InstanceScheduler:InviteSchedule(times)
             LeaveParty()
         else
             C_Timer.After(1, function()
-                self:InviteSchedule(times+1)
+                self:InviteSchedule(times + 1)
             end)
         end
     end
@@ -34,7 +34,7 @@ function InstanceScheduler:PartySchedule(times)
                 self:SendWhisperMessage("NetProblem", s)
             else
                 C_Timer.After(1, function()
-                    self:PartySchedule(times+1)
+                    self:PartySchedule(times + 1)
                 end)
             end
         end
@@ -44,7 +44,7 @@ end
 function InstanceScheduler:IntoInstanceSchedule()
     if IsInGroup() then
         if not GetPlayerMapPosition("party1") then
-            local name,realm = UnitName("party1")
+            local name, realm = UnitName("party1")
             local s = self:NameFormat(name, realm, true)
             PromoteToLeader(s)
             self:SendPartyMessage("ChangeLeader")
@@ -86,13 +86,23 @@ function InstanceScheduler:UpdateSchedule()
     local t = GetTime()
     if t - InstanceScheduler.InviteSchedulerTempTime > 2 then
         InstanceScheduler.InviteSchedulerTempTime = t
-        if InstanceScheduler.InGroupPlayer == "" and not IsInGroup() then
-            if #InstanceSchedulerVariables.Line > 0 and GetPlayerMapPosition("player") then
-                local sender = InstanceSchedulerVariables.Line[1]
-                InstanceScheduler.InGroupPlayer = sender
-                InviteUnit(sender)
-                table.remove(InstanceSchedulerVariables.Line, 1)
+        if not IsInGroup() then
+            if InstanceScheduler.InGroupPlayer == "" then
+                if #InstanceSchedulerVariables.Line > 0 and GetPlayerMapPosition("player") then
+                    local sender = InstanceSchedulerVariables.Line[1]
+                    InstanceScheduler.InGroupPlayer = sender
+                    InviteUnit(sender)
+                    table.remove(InstanceSchedulerVariables.Line, 1)
+                end
+            else
+                InstanceScheduler.CheckTime = InstanceScheduler.CheckTime or 0
+                InstanceScheduler.CheckTime = InstanceScheduler.CheckTime + 1
+                if InstanceScheduler.CheckTime == 5 then
+                    InviteUnit(InstanceScheduler.InGroupPlayer)
+                end
             end
+        else
+            InstanceScheduler.CheckTime = 0
         end
     end
     if StaticPopup1:IsShown() and StaticPopup1Button1:GetText() == "取消" then
