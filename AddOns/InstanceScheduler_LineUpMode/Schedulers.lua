@@ -97,8 +97,13 @@ function InstanceScheduler:UpdateSchedule()
             else
                 InstanceScheduler.CheckTime = InstanceScheduler.CheckTime or 0
                 InstanceScheduler.CheckTime = InstanceScheduler.CheckTime + 1
-                if InstanceScheduler.CheckTime == 5 then
-                    InviteUnit(InstanceScheduler.InGroupPlayer)
+                if InstanceScheduler.CheckTime >= 5 then
+                    if InstanceScheduler.CheckTime >= 15 then
+                        InstanceScheduler.CheckTime = 0
+                        InstanceScheduler.InGroupPlayer = ""
+                    else
+                        InviteUnit(InstanceScheduler.InGroupPlayer)
+                    end
                 end
             end
         else
