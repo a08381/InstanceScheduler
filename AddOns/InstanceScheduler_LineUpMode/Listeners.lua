@@ -43,6 +43,14 @@ InstanceScheduler["CHAT_MSG_PARTY"] = function(...)
         SetLegacyRaidDifficultyID(3)
         InstanceScheduler:SendPartyMessage("ChangeDifficulty")
     end
+    if message:len() >= 2 and message:sub(1, 2) == "yx10" and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
+        SetLegacyRaidDifficultyID(5)
+        InstanceScheduler:SendPartyMessage("ChangeDifficulty")
+    end
+    if message:len() >= 2 and message:sub(1, 2) == "yx25" and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
+        SetLegacyRaidDifficultyID(6)
+        InstanceScheduler:SendPartyMessage("ChangeDifficulty")
+    end
 end
 
 InstanceScheduler["CHAT_MSG_GUILD"] = function(...)
@@ -100,7 +108,7 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
             if InstanceScheduler.InGroupPlayer ~= "" then
                 InstanceScheduler.InGroupPlayer = ""
             end
-            if GetLegacyRaidDifficultyID() == 3 then
+            if GetLegacyRaidDifficultyID() ~= 4 then
                 SetLegacyRaidDifficultyID(4)
             end
         end

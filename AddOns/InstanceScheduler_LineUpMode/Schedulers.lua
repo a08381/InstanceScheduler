@@ -46,12 +46,12 @@ function InstanceScheduler:IntoInstanceSchedule()
         if not GetPlayerMapPosition("party1") then
             local name, realm = UnitName("party1")
             local s = self:NameFormat(name, realm, true)
-            PromoteToLeader(s)
-            self:SendPartyMessage("ChangeLeader")
-            C_Timer.After(0, function()
+            C_Timer.After(5, function()
                 if IsInGroup() then
+                    PromoteToLeader(s)
+                    self:SendPartyMessage("ChangeLeader")
                     self:SendPartyMessage("LeaveMessage")
-                    C_Timer.After(0, function()
+                    C_Timer.After(1, function()
                         LeaveParty()
                         local fullname = self:NameFormat(name, realm)
                         local realm = self:GetRealm(fullname)
@@ -71,7 +71,7 @@ function InstanceScheduler:IntoInstanceSchedule()
         else
             if not UnitIsConnected("party1") then
                 LeaveParty()
-            elseif GetTime() - self.InGroupTime > 30 and #InstanceSchedulerVariables.Line > 0 then
+            elseif GetTime() - self.InGroupTime > 60 and #InstanceSchedulerVariables.Line > 0 then
                 LeaveParty()
             else
                 C_Timer.After(1, function()
