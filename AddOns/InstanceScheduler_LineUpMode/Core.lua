@@ -6,6 +6,8 @@
 -- To change this template use File | Settings | File Templates.
 --
 
+local _, InstanceScheduler = ...
+
 InstanceScheduler.Status = InstanceScheduler.AutoStart
 --InstanceScheduler.TempStatus = InstanceScheduler.Status
 
