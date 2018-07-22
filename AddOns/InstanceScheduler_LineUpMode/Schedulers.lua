@@ -6,6 +6,8 @@
 -- To change this template use File | Settings | File Templates.
 --
 
+local _, InstanceScheduler = ...
+
 function InstanceScheduler:InviteSchedule(times)
     if IsInGroup() and GetNumGroupMembers() == 1 then
         if times >= 5 then
@@ -43,7 +45,7 @@ end
 
 function InstanceScheduler:IntoInstanceSchedule()
     if IsInGroup() then
-        if not GetPlayerMapPosition("party1") then
+        if not self:GetPlayerMapPosition("party1") then
             local name, realm = UnitName("party1")
             local s = self:NameFormat(name, realm, true)
             C_Timer.After(5, function()
@@ -84,11 +86,11 @@ end
 
 function InstanceScheduler:UpdateSchedule()
     local t = GetTime()
-    if t - InstanceScheduler.InviteSchedulerTempTime > 2 then
+    if t - InstanceScheduler.InviteSchedulerTempTime > 1 then
         InstanceScheduler.InviteSchedulerTempTime = t
         if not IsInGroup() then
             if InstanceScheduler.InGroupPlayer == "" then
-                if #InstanceSchedulerVariables.Line > 0 and GetPlayerMapPosition("player") then
+                if #InstanceSchedulerVariables.Line > 0 and InstanceScheduler:GetPlayerMapPosition("player") then
                     local sender = InstanceSchedulerVariables.Line[1]
                     InstanceScheduler.InGroupPlayer = sender
                     InviteUnit(sender)

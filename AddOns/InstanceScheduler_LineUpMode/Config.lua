@@ -7,7 +7,6 @@
 --
 
 local _, InstanceScheduler = ...
-_G["InstanceScheduler"] = InstanceScheduler
 
 InstanceScheduler.PrintPrefix = "|cff99ffffInstance Scheduler|r - "
 _G.BINDING_HEADER_INSTANCESCHEDULER = "Instance Scheduler"

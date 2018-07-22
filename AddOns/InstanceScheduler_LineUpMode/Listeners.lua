@@ -10,7 +10,7 @@ local AddonName, InstanceScheduler = ...
 
 InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
     local _, message, sender = ...
-    if GetPlayerMapPosition("player") and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
+    if InstanceScheduler:GetPlayerMapPosition("player") and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
         if message:sub(1, 1) == "1" then
             for i, v in ipairs(InstanceSchedulerVariables.Line) do
                 if sender == v then
@@ -67,7 +67,7 @@ end
 InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
     local frame = ...
     if InstanceScheduler.Status then
-        if GetPlayerMapPosition("player") and not InstanceScheduler.TempStatus then
+        if InstanceScheduler:GetPlayerMapPosition("player") and not InstanceScheduler.TempStatus then
             frame:RegisterEvent("CHAT_MSG_WHISPER")
             frame:RegisterEvent("CHAT_MSG_PARTY")
             frame:RegisterEvent("PARTY_INVITE_REQUEST")
@@ -75,7 +75,7 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
             frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
             InstanceScheduler.TempStatus = true
             InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.TempStatus)
-        elseif InstanceScheduler.TempStatus and not GetPlayerMapPosition("player") then
+        elseif InstanceScheduler.TempStatus and not InstanceScheduler:GetPlayerMapPosition("player") then
             frame:UnregisterEvent("CHAT_MSG_WHISPER")
             frame:UnregisterEvent("CHAT_MSG_PARTY")
             frame:UnregisterEvent("PARTY_INVITE_REQUEST")

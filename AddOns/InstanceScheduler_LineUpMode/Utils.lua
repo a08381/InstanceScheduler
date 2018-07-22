@@ -6,6 +6,8 @@
 -- To change this template use File | Settings | File Templates.
 --
 
+local _, InstanceScheduler = ...
+
 function InstanceScheduler:SendPartyMessage(key, ...)
     local args = { ... }
     local message = self.Messages[key]
@@ -43,6 +45,14 @@ function InstanceScheduler:NameFormat(name, realm, hide)
         fullName = fullName.."-"..realm
     end
     return fullName
+end
+
+function InstanceScheduler:GetPlayerMapPosition(unit)
+    local mapid = C_Map.GetBestMapForUnit(unit)
+    if not mapid then return end
+    local player = C_Map.GetPlayerMapPosition(mapid, unit)
+    if not player then return end
+    return player:GetXY()
 end
 
 function InstanceScheduler:GetRealm(fullName)
