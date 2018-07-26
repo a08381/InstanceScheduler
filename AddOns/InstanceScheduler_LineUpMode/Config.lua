@@ -18,7 +18,7 @@ InstanceScheduler.TempTime = GetTime()
 InstanceScheduler.InviteSchedulerTempTime = GetTime()
 InstanceScheduler.InGroupTime = 0
 InstanceScheduler.TempMembers = 0
-InstanceScheduler.DifficultyID = { 3, 4, 5, 6, 14, 15 }
+InstanceScheduler.DifficultyID = { 3, 4, 5, 6, 9, 14, 15 }
 
 InstanceScheduler.AutoStart = true
 InstanceScheduler.SavedInstances =
