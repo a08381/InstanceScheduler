@@ -11,7 +11,7 @@ local AddonName, InstanceScheduler = ...
 InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
     local _, message, sender = ...
     if InstanceScheduler:GetPlayerMapPosition("player") and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
-        if message:sub(1, 1) == "1" then
+        if InstanceScheduler:First(message, "1") then
             for i, v in ipairs(InstanceSchedulerVariables.Line) do
                 if sender == v then
                     InstanceScheduler:SendWhisperMessage("AlreadyInLine", sender, i)
@@ -22,7 +22,7 @@ InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
                 table.insert(InstanceSchedulerVariables.Line, sender)
                 InstanceScheduler:SendWhisperMessage("AddInLine", sender, #InstanceSchedulerVariables.Line)
             end
-        elseif message:sub(1, 1) == "0" and InstanceScheduler.InGroupPlayer ~= sender then
+        elseif InstanceScheduler:First(message, "0") and InstanceScheduler.InGroupPlayer ~= sender then
             for i, v in ipairs(InstanceSchedulerVariables.Line) do
                 if sender == v then
                     table.remove(InstanceSchedulerVariables.Line, i)
@@ -31,6 +31,14 @@ InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
                 end
             end
             InstanceScheduler:SendWhisperMessage("NotInLine", sender)
+        elseif InstanceScheduler:First(message, "3") then
+            InstanceScheduler:SendWhisperMessage("Menu", sender)
+        elseif InstanceScheduler:First(message, "5") then
+            InstanceScheduler:SendWhisperMessage("InstanceList", sender)
+        elseif InstanceScheduler:First(message, "6") then
+            InstanceScheduler:SendWhisperMessage("InstanceLocation", sender)
+        elseif InstanceScheduler:First(message, "7") then
+            InstanceScheduler:SendWhisperMessage("Advice", sender)
         else
             InstanceScheduler:SendWhisperMessage("AutoRepeat", sender)
         end
@@ -39,11 +47,11 @@ end
 
 InstanceScheduler["CHAT_MSG_PARTY"] = function(...)
     local _, message, sender = ...
-    if message:len() >= 2 and message:sub(1, 2) == "10" and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
+    if InstanceScheduler:First(message, "10") and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
         SetLegacyRaidDifficultyID(3)
         InstanceScheduler:SendPartyMessage("ChangeDifficulty")
     end
-    if message:len() >= 2 and message:sub(1, 2) == "yx" and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
+    if InstanceScheduler:First(message, "yx") and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
         SetRaidDifficultyID(15)
         SetLegacyRaidDifficultyID(5)
         InstanceScheduler:SendPartyMessage("ChangeDifficulty")

@@ -10,29 +10,35 @@ local _, InstanceScheduler = ...
 
 function InstanceScheduler:SendPartyMessage(key, ...)
     local args = { ... }
-    local message = self.Messages[key]
+    local messages = self.Messages[key] or key
     if #args > 0 then
-        message = message:format(...)
+        messages = messages:format(...)
     end
-    SendChatMessage(message, "PARTY")
+    for _, message in pairs(self:Split(messages)) do
+        SendChatMessage(message, "PARTY")
+    end
 end
 
 function InstanceScheduler:SendWhisperMessage(key, name, ...)
     local args = { ... }
-    local message = self.Messages[key]
+    local messages = self.Messages[key] or key
     if #args > 0 then
-        message = message:format(...)
+        messages = messages:format(...)
     end
-    SendChatMessage(message, "WHISPER", nil, name)
+    for _, message in pairs(self:Split(messages)) do
+        SendChatMessage(message, "WHISPER", nil, name)
+    end
 end
 
 function InstanceScheduler:SendGuildMessage(key, ...)
     local args = { ... }
-    local message = self.Commands[key]
+    local messages = self.Commands[key] or key
     if #args > 0 then
-        message = message:format(...)
+        messages = messages:format(...)
     end
-    SendChatMessage(message, "GUILD")
+    for _, message in pairs(self:Split(messages)) do
+        SendChatMessage(message, "GUILD")
+    end
 end
 
 function InstanceScheduler:NameFormat(name, realm, hide)
@@ -45,6 +51,25 @@ function InstanceScheduler:NameFormat(name, realm, hide)
         fullName = fullName.."-"..realm
     end
     return fullName
+end
+
+function InstanceScheduler:First(main, str)
+    return main:len() >= str:len() and main:sub(1, str:len()):lower() == str:lower()
+end
+
+function InstanceScheduler:Split(str)
+    local res = {}
+    if not string.match(str, '\r?\n') then
+        table.insert(res, str)
+    else
+        string.gsub(str, '([^\r\n]+)\r?\n', function(n)
+            local temp = string.match(n, '^%s*(.+)%s*$')
+            if not temp and not string.match(temp, '^%s*$') then
+                table.insert(res, temp)
+            end
+        end)
+    end
+    return res
 end
 
 function InstanceScheduler:GetPlayerMapPosition(unit)
