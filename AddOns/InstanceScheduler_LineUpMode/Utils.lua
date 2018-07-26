@@ -61,10 +61,15 @@ end
 
 function InstanceScheduler:ExtendsSavedInstance(stats)
     for i=1,GetNumSavedInstances() do
-        local a,_,_,_,_,c = GetSavedInstanceInfo(i)
+        local a, _, _, b, _, c = GetSavedInstanceInfo(i)
         for _,v in pairs(self.SavedInstances) do
             if v == a and c~=stats then
-                SetSavedInstanceExtend(i, stats)
+                for _, v in pairs(self.DifficultyID) do
+                    if v == b then
+                        SetSavedInstanceExtend(i, stats)
+                        break
+                    end
+                end
             end
         end
     end

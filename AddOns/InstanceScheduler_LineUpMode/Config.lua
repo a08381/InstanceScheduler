@@ -18,6 +18,7 @@ InstanceScheduler.TempTime = GetTime()
 InstanceScheduler.InviteSchedulerTempTime = GetTime()
 InstanceScheduler.InGroupTime = 0
 InstanceScheduler.TempMembers = 0
+InstanceScheduler.DifficultyID = { 3, 4, 5, 6, 14, 15 }
 
 InstanceScheduler.AutoStart = true
 InstanceScheduler.SavedInstances =
@@ -26,9 +27,15 @@ InstanceScheduler.SavedInstances =
     "奥杜尔",
     "火焰之地",
     "风神王座",
-    "巨龙之魂",
-    "魔古山宝库",
-    "雷电王座"
+    --"巨龙之魂",
+    --"魔古山宝库",
+    --"雷电王座",
+    --"永春台",
+    "黑翼血环",
+    "决战奥格瑞玛",
+    "安其拉神殿",
+    "地狱火堡垒",
+    "黑石铸造厂"
 }
 InstanceScheduler.Messages =
 {
