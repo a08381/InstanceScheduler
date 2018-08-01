@@ -8,6 +8,11 @@
 
 local _, InstanceScheduler = ...
 
+local string, pairs, table = string, pairs, table
+
+local SendChatMessage, GetRealmName, C_Map, GetMapNameByID
+    = SendChatMessage, GetRealmName, C_Map, GetMapNameByID
+
 function InstanceScheduler:SendPartyMessage(key, ...)
     local args = { ... }
     local messages = self.Messages[key] or key
@@ -64,7 +69,7 @@ function InstanceScheduler:Split(str)
     else
         string.gsub(str, '([^\r\n]+)\r?\n', function(n)
             local temp = string.match(n, '^%s*(.+)%s*$')
-            if not temp and not string.match(temp, '^%s*$') then
+            if temp and not string.match(temp, '^%s*$') then
                 table.insert(res, temp)
             end
         end)
@@ -78,6 +83,12 @@ function InstanceScheduler:GetPlayerMapPosition(unit)
     local player = C_Map.GetPlayerMapPosition(mapid, unit)
     if not player then return end
     return player:GetXY()
+end
+
+function InstanceScheduler:GetPlayerMapName(unit)
+    local mapid = C_Map.GetBestMapForUnit(unit)
+    if not mapid then return end
+    return GetMapNameByID(mapid)
 end
 
 function InstanceScheduler:GetRealm(fullName)

@@ -8,24 +8,32 @@
 
 local AddonName, InstanceScheduler = ...
 
+local pairs, ipairs, table = pairs, ipairs, table
+
+local UnitName, UnitInParty, IsInGroup, GetNumGroupMembers, UnitIsGroupLeader
+    = UnitName, UnitInParty, IsInGroup, GetNumGroupMembers, UnitIsGroupLeader
+
+local SetRaidDifficultyID, SetLegacyRaidDifficultyID, GetRaidDifficultyID, GetLegacyRaidDifficultyID
+    = SetRaidDifficultyID, SetLegacyRaidDifficultyID, GetRaidDifficultyID, GetLegacyRaidDifficultyID
+
 InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
     local _, message, sender = ...
     if InstanceScheduler:GetPlayerMapPosition("player") and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
         if InstanceScheduler:First(message, "1") then
-            for i, v in ipairs(InstanceSchedulerVariables.Line) do
+            for i, v in ipairs(InstanceScheduler.Variables.Line) do
                 if sender == v then
                     InstanceScheduler:SendWhisperMessage("AlreadyInLine", sender, i)
                     return
                 end
             end
             if not UnitInParty(sender) and InstanceScheduler.InGroupPlayer ~= sender then
-                table.insert(InstanceSchedulerVariables.Line, sender)
-                InstanceScheduler:SendWhisperMessage("AddInLine", sender, #InstanceSchedulerVariables.Line)
+                table.insert(InstanceScheduler.Variables.Line, sender)
+                InstanceScheduler:SendWhisperMessage("AddInLine", sender, #InstanceScheduler.Variables.Line)
             end
         elseif InstanceScheduler:First(message, "0") and InstanceScheduler.InGroupPlayer ~= sender then
-            for i, v in ipairs(InstanceSchedulerVariables.Line) do
+            for i, v in ipairs(InstanceScheduler.Variables.Line) do
                 if sender == v then
-                    table.remove(InstanceSchedulerVariables.Line, i)
+                    table.remove(InstanceScheduler.Variables.Line, i)
                     InstanceScheduler:SendWhisperMessage("RemoveFromLine", sender)
                     return
                 end
@@ -152,6 +160,7 @@ InstanceScheduler["VARIABLES_LOADED"] = function(...)
     elseif InstanceSchedulerVariables ~= ver then
         InstanceSchedulerVariables.Version = ver
     end
+    InstanceScheduler.Variables = InstanceSchedulerVariables
     frame:UnregisterEvent("VARIABLES_LOADED")
     if InstanceScheduler.Status then
         frame:RegisterEvent("CHAT_MSG_WHISPER")

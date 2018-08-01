@@ -8,12 +8,21 @@
 
 local _, InstanceScheduler = ...
 
+local table, pairs, After, GetTime = table, pairs, C_Timer.After, GetTime
+local StaticPopup1, StaticPopup1Button1 = StaticPopup1, StaticPopup1Button1
+
+local IsInGroup, GetNumGroupMembers, LeaveParty, UnitIsConnected
+    = IsInGroup, GetNumGroupMembers, LeaveParty, UnitIsConnected
+
+local ResetInstances, UnitName, PromoteToLeader, InviteUnit
+    = ResetInstances, UnitName, PromoteToLeader, InviteUnit
+
 function InstanceScheduler:InviteSchedule(times)
     if IsInGroup() and GetNumGroupMembers() == 1 then
         if times >= 5 then
             LeaveParty()
         else
-            C_Timer.After(1, function()
+            After(1, function()
                 self:InviteSchedule(times + 1)
             end)
         end
@@ -23,10 +32,20 @@ end
 function InstanceScheduler:PartySchedule(times)
     if IsInGroup() then
         if UnitIsConnected("party1") then
+            local map = self:GetPlayerMapName("party1")
+            for _, v in pairs(self.LeaveMaps) do
+                if v == map then
+                    self:SendPartyMessage("InstanceProblem")
+                    After(0.5, function()
+                        LeaveParty()
+                    end)
+                    return
+                end
+            end
             ResetInstances()
             self:SendPartyMessage("ResetComplete")
             self.InGroupTime = GetTime()
-            C_Timer.After(1, function()
+            After(1, function()
                 self:IntoInstanceSchedule()
             end)
         else
@@ -35,7 +54,7 @@ function InstanceScheduler:PartySchedule(times)
                 LeaveParty()
                 self:SendWhisperMessage("NetProblem", s)
             else
-                C_Timer.After(1, function()
+                After(1, function()
                     self:PartySchedule(times + 1)
                 end)
             end
@@ -48,35 +67,35 @@ function InstanceScheduler:IntoInstanceSchedule()
         if not self:GetPlayerMapPosition("party1") then
             local name, realm = UnitName("party1")
             local s = self:NameFormat(name, realm, true)
-            C_Timer.After(5, function()
+            After(0.5, function()
                 if IsInGroup() then
                     PromoteToLeader(s)
                     self:SendPartyMessage("ChangeLeader")
                     self:SendPartyMessage("LeaveMessage")
-                    C_Timer.After(1, function()
+                    After(0.5, function()
                         LeaveParty()
                         local fullname = self:NameFormat(name, realm)
                         local realm = self:GetRealm(fullname)
-                        if not InstanceSchedulerVariables.Users[realm] then
-                            InstanceSchedulerVariables.Users[realm] = {}
+                        if not self.Variables.Users[realm] then
+                            self.Variables.Users[realm] = {}
                         end
-                        local times = InstanceSchedulerVariables.Users[realm][fullname]
+                        local times = self.Variables.Users[realm][fullname]
                         if times then
-                            InstanceSchedulerVariables.Users[realm][fullname] = times + 1
+                            self.Variables.Users[realm][fullname] = times + 1
                         else
-                            InstanceSchedulerVariables.Users[realm][fullname] = 1
+                            self.Variables.Users[realm][fullname] = 1
                         end
-                        InstanceSchedulerVariables.Total = InstanceSchedulerVariables.Total + 1
+                        self.Variables.Total = self.Variables.Total + 1
                     end)
                 end
             end)
         else
             if not UnitIsConnected("party1") then
                 LeaveParty()
-            elseif GetTime() - self.InGroupTime > 60 and #InstanceSchedulerVariables.Line > 0 then
+            elseif GetTime() - self.InGroupTime > 60 and #self.Variables.Line > 0 then
                 LeaveParty()
             else
-                C_Timer.After(1, function()
+                After(1, function()
                     self:IntoInstanceSchedule()
                 end)
             end
@@ -90,11 +109,11 @@ function InstanceScheduler:UpdateSchedule()
         InstanceScheduler.InviteSchedulerTempTime = t
         if not IsInGroup() then
             if InstanceScheduler.InGroupPlayer == "" then
-                if #InstanceSchedulerVariables.Line > 0 and InstanceScheduler:GetPlayerMapPosition("player") then
-                    local sender = InstanceSchedulerVariables.Line[1]
+                if #InstanceScheduler.Variables.Line > 0 and InstanceScheduler:GetPlayerMapPosition("player") then
+                    local sender = InstanceScheduler.Variables.Line[1]
                     InstanceScheduler.InGroupPlayer = sender
                     InviteUnit(sender)
-                    table.remove(InstanceSchedulerVariables.Line, 1)
+                    table.remove(InstanceScheduler.Variables.Line, 1)
                 end
             else
                 InstanceScheduler.CheckTime = InstanceScheduler.CheckTime or 0
