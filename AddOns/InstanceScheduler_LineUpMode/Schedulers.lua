@@ -92,7 +92,7 @@ function InstanceScheduler:IntoInstanceSchedule()
         else
             if not UnitIsConnected("party1") then
                 LeaveParty()
-            elseif GetTime() - self.InGroupTime > 60 and #self.Variables.Line > 0 then
+            elseif GetTime() - self.InGroupTime > 20 and #self.Variables.Line > 0 then
                 LeaveParty()
             else
                 After(1, function()

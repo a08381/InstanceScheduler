@@ -20,7 +20,7 @@ InstanceScheduler.InGroupTime = 0
 InstanceScheduler.TempMembers = 0
 InstanceScheduler.DifficultyID = { 3, 4, 5, 6, 9, 14, 15 }
 
-InstanceScheduler.AutoStart = true
+InstanceScheduler.AutoStart = false
 InstanceScheduler.SavedInstances =
 {
     "冰冠堡垒",

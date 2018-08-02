@@ -8,15 +8,16 @@
 
 local _, InstanceScheduler = ...
 
-local string, pairs, table = string, pairs, table
+local pairs, table, select = pairs, table, select
 
 local SendChatMessage, GetRealmName, C_Map, GetMapNameByID
     = SendChatMessage, GetRealmName, C_Map, GetMapNameByID
 
+local messages, fullName, res, temp, mapid, player
+
 function InstanceScheduler:SendPartyMessage(key, ...)
-    local args = { ... }
-    local messages = self.Messages[key] or key
-    if #args > 0 then
+    messages = self.Messages[key] or key
+    if select('#', ...) > 0 then
         messages = messages:format(...)
     end
     for _, message in pairs(self:Split(messages)) do
@@ -25,9 +26,8 @@ function InstanceScheduler:SendPartyMessage(key, ...)
 end
 
 function InstanceScheduler:SendWhisperMessage(key, name, ...)
-    local args = { ... }
-    local messages = self.Messages[key] or key
-    if #args > 0 then
+    messages = self.Messages[key] or key
+    if select('#', ...) > 0 then
         messages = messages:format(...)
     end
     for _, message in pairs(self:Split(messages)) do
@@ -36,9 +36,8 @@ function InstanceScheduler:SendWhisperMessage(key, name, ...)
 end
 
 function InstanceScheduler:SendGuildMessage(key, ...)
-    local args = { ... }
-    local messages = self.Commands[key] or key
-    if #args > 0 then
+    messages = self.Commands[key] or key
+    if select('#', ...) > 0 then
         messages = messages:format(...)
     end
     for _, message in pairs(self:Split(messages)) do
@@ -47,7 +46,7 @@ function InstanceScheduler:SendGuildMessage(key, ...)
 end
 
 function InstanceScheduler:NameFormat(name, realm, hide)
-    local fullName = name
+    fullName = name
     if not realm or realm == "" then
         if not hide then
             fullName = fullName.."-"..GetRealmName()
@@ -59,17 +58,17 @@ function InstanceScheduler:NameFormat(name, realm, hide)
 end
 
 function InstanceScheduler:First(main, str)
-    return main:len() >= str:len() and main:sub(1, str:len()):lower() == str:lower()
+    return main:len() >= str:len() and main:sub(1, str:len()) == str:lower()
 end
 
 function InstanceScheduler:Split(str)
-    local res = {}
-    if not string.match(str, '\r?\n') then
+    res = {}
+    if not str:match('\r?\n') then
         table.insert(res, str)
     else
-        string.gsub(str, '([^\r\n]+)\r?\n', function(n)
-            local temp = string.match(n, '^%s*(.+)%s*$')
-            if temp and not string.match(temp, '^%s*$') then
+        str:gsub('([^\r\n]+)\r?\n', function(n)
+            temp = n:match('^%s*(.+)%s*$')
+            if temp and not temp:match('^%s*$') then
                 table.insert(res, temp)
             end
         end)
@@ -78,15 +77,15 @@ function InstanceScheduler:Split(str)
 end
 
 function InstanceScheduler:GetPlayerMapPosition(unit)
-    local mapid = C_Map.GetBestMapForUnit(unit)
+    mapid = C_Map.GetBestMapForUnit(unit)
     if not mapid then return end
-    local player = C_Map.GetPlayerMapPosition(mapid, unit)
+    player = C_Map.GetPlayerMapPosition(mapid, unit)
     if not player then return end
     return player:GetXY()
 end
 
 function InstanceScheduler:GetPlayerMapName(unit)
-    local mapid = C_Map.GetBestMapForUnit(unit)
+    mapid = C_Map.GetBestMapForUnit(unit)
     if not mapid then return end
     return GetMapNameByID(mapid)
 end
@@ -133,7 +132,7 @@ end
 function InstanceScheduler:CommandInfo(str)
     local stats = 0
     local fps = GetFramerate()
-    local _,_,latencyHome,latencyWorld = GetNetStats()
+    local _, _, latencyHome, latencyWorld = GetNetStats()
     if fps >= 30 then
         stats = stats + 0
     elseif fps >= 20 and fps < 30 then
