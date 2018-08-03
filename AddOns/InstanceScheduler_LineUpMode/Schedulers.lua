@@ -11,8 +11,8 @@ local _, InstanceScheduler = ...
 local table, pairs, After, GetTime = table, pairs, C_Timer.After, GetTime
 local StaticPopup1, StaticPopup1Button1 = StaticPopup1, StaticPopup1Button1
 
-local IsInGroup, GetNumGroupMembers, LeaveParty, UnitIsConnected
-    = IsInGroup, GetNumGroupMembers, LeaveParty, UnitIsConnected
+local IsInGroup, GetNumGroupMembers, LeaveParty, UnitIsConnected, UnitPosition
+    = IsInGroup, GetNumGroupMembers, LeaveParty, UnitIsConnected, UnitPosition
 
 local ResetInstances, UnitName, PromoteToLeader, InviteUnit
     = ResetInstances, UnitName, PromoteToLeader, InviteUnit
@@ -64,7 +64,7 @@ end
 
 function InstanceScheduler:IntoInstanceSchedule()
     if IsInGroup() then
-        if not self:GetPlayerMapPosition("party1") then
+        if not UnitPosition("party1") then
             local name, realm = UnitName("party1")
             local s = self:NameFormat(name, realm, true)
             After(0.5, function()
@@ -109,7 +109,7 @@ function InstanceScheduler:UpdateSchedule()
         InstanceScheduler.InviteSchedulerTempTime = t
         if not IsInGroup() then
             if InstanceScheduler.InGroupPlayer == "" then
-                if #InstanceScheduler.Variables.Line > 0 and InstanceScheduler:GetPlayerMapPosition("player") then
+                if #InstanceScheduler.Variables.Line > 0 and UnitPosition("player") then
                     local sender = InstanceScheduler.Variables.Line[1]
                     InstanceScheduler.InGroupPlayer = sender
                     InviteUnit(sender)

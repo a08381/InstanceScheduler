@@ -10,8 +10,11 @@ local _, InstanceScheduler = ...
 
 local pairs, table, select = pairs, table, select
 
-local SendChatMessage, GetRealmName, C_Map, GetMapNameByID
-    = SendChatMessage, GetRealmName, C_Map, GetMapNameByID
+local SendChatMessage, GetRealmName, GetMapID, GetMapInfo
+    = SendChatMessage, GetRealmName, C_Map.GetBestMapForUnit, C_Map.GetMapInfo
+
+local map = {}
+local none = {}
 
 local messages, fullName, res, temp, mapid, player
 
@@ -76,18 +79,13 @@ function InstanceScheduler:Split(str)
     return res
 end
 
-function InstanceScheduler:GetPlayerMapPosition(unit)
-    mapid = C_Map.GetBestMapForUnit(unit)
-    if not mapid then return end
-    player = C_Map.GetPlayerMapPosition(mapid, unit)
-    if not player then return end
-    return player:GetXY()
-end
-
 function InstanceScheduler:GetPlayerMapName(unit)
-    mapid = C_Map.GetBestMapForUnit(unit)
+    mapid = GetMapID(unit)
     if not mapid then return end
-    return GetMapNameByID(mapid)
+    if not map[mapid] then
+        map[mapid] = GetMapInfo(mapid) or none
+    end
+    return map[mapid].name
 end
 
 function InstanceScheduler:GetRealm(fullName)
