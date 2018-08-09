@@ -1,5 +1,5 @@
 .idea
 *.iml
 
-Addons/Blizzard_*
-*XML
+Addons/Blizzard_*/
+*XML/
