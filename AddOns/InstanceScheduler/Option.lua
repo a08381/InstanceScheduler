@@ -7,96 +7,97 @@
 --
 local _, Addon = ...
 
-local L = Addon.Locale
-local M = Addon.Messages
-local V = Addon.Variables
+setfenv(1, Addon)
 
 local GetMessageTable = function()
     local args = {}
-    for k, v in pairs(M) do
+    for k, v in pairs(Messages) do
         args[k] = v["name"]
     end
     return args
 end
 
-Addon["Option"] = {
-    name = L["InstanceScheduler"],
+Option = {
+    name = Locale["InstanceScheduler"],
     type = "group",
     args = {
         basic = {
-            name = L["basic_option"],
+            name = Locale["basic_option"],
             type = "group",
             childGroups = "tab",
             args = {
-                enable = {
-                    name = L["enable"],
+                ["1"] = {
+                    name = Locale["enable"],
                     type = "toggle",
                     set = function(info, val)
-                        Addon:SwitchOn()
+                        Util:SwitchOn()
                     end,
                     get = function(info)
-                        return V.Status
+                        return Variables.Status
                     end
                 },
-                auto_start = {
-                    name = L["auto_start"],
+                ["2"] = {
+                    name = Locale["auto_start"],
                     type = "toggle",
                     set = function(info, val)
-                        V["AUTO_START"] = val
+                        SavedVariables.AUTO_START = val
                     end,
                     get = function(info)
-                        return V["AUTO_START"]
+                        return SavedVariables.AUTO_START
                     end
                 },
-                raid_settings = {
-                    name = L["raid_setings"],
+                ["3"] = {
+                    name = Locale["raid_setings"],
                     type = "group",
-                    disabled = function(info)
-                        return not V.Status
-                    end,
                     args = {
-                        extend = {
-                            name = L["extend"],
+                        ["1"] = {
+                            name = Locale["extend"],
                             type = "toggle",
+                            disabled = function(info)
+                                return not Variables.Status
+                            end,
                             set = function(info, val)
-                                V.Extended = val
+                                SavedVariables.Extended = val
                             end,
                             get = function(info)
-                                return V.Extended
+                                return SavedVariables.Extended
                             end
                         },
-                        only_extend = {
-                            name = L["only_extend"],
+                        ["2"] = {
+                            name = Locale["only_extend"],
                             type = "toggle",
+                            disabled = function(info)
+                                return not Variables.Status
+                            end,
                             hidden = function(info)
-                                return not V.Extended
+                                return not SavedVariables.Extended
                             end,
                             set = function(info, val)
-                                V.Extended_Only = val
+                                SavedVariables.Extended_Only = val
                             end,
                             get = function(info)
-                                return V.Extended_Only
+                                return SavedVariables.Extended_Only
                             end
                         }
                     }
                 },
-                other_setings = {
-                    name = L["other_setings"],
+                ["4"] = {
+                    name = Locale["other_setings"],
                     type = "group",
-                    disabled = function(info)
-                        return not V.Status
-                    end,
                     args = {
                         leave_time = {
-                            name = L["leave_time"],
+                            name = Locale["leave_time"],
                             type = "range",
+                            disabled = function(info)
+                                return not Variables.Status
+                            end,
                             min = 20,
                             max = 120,
                             set = function(info, val)
-                                V.LEAVE_TIME = val
+                                SavedVariables.LEAVE_TIME = val
                             end,
                             get = function(info)
-                                return V.LEAVE_TIME
+                                return SavedVariables.LEAVE_TIME
                             end
                         }
                     }
@@ -104,22 +105,22 @@ Addon["Option"] = {
             }
         },
         advanced = {
-            name = L["advanced_option"],
+            name = Locale["advanced_option"],
             type = "group",
             childGroups = "tab",
             args = {
                 message = {
-                    name = L["message_select"],
+                    name = Locale["message_select"],
                     type = "select",
                     style = "dropdown",
                     values = GetMessageTable()
                 },
                 key = {
-                    name = L["message_key"],
+                    name = Locale["message_key"],
                     type = "input",
                 },
                 response = {
-                    name = L["message_response"],
+                    name = Locale["message_response"],
                     type = "input"
                 }
             }

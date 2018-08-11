@@ -8,14 +8,69 @@
 
 local _, Addon = ...
 
-_G["InstanceScheduler"] = LibStub("AceAddon-3.0"):NewAddon("InstanceScheduler", Addon, "AceConfig-3.0", "AceConfigDialog-3.0", "AceEvent-3.0", "AceTimer-3.0")
+local _G = _G
+local rawset = rawset
 
-function Addon:OnEnable()
-    if not InstanceSchedulerVariables then
-        InstanceSchedulerVariables = {
-            Locale = Addon.Locale
-        }
-        Addon.SavedVariables = InstanceSchedulerVariables
-    end
-end
+_G["InstanceScheduler"] = Addon
 
+setmetatable(Addon, {
+    __index = function(self, key)
+        local val = _G[key]
+        if val ~= nil then
+            rawset(self, key, val)
+        end
+        return val
+    end })
+
+setfenv(1, Addon)
+
+Variables = {
+    InGroupPlayer = "",
+    TempTime = 0,
+    InGroupTime = 0,
+    RunTime = 0,
+    TempMembers = 0,
+    DifficultyID = { 3, 4, 5, 6, 9, 14, 15 },
+    SavedInstances =
+    {
+        "冰冠堡垒",
+        "奥杜尔",
+        "火焰之地",
+        "风神王座",
+        --"巨龙之魂",
+        --"魔古山宝库",
+        --"雷电王座",
+        --"永春台",
+        "黑翼血环",
+        "决战奥格瑞玛",
+        "黑暗神殿",
+        "安其拉神殿",
+        "地狱火堡垒",
+        "黑石铸造厂"
+    },
+    LeaveMaps =
+    {
+        "雷神岛",
+        "翡翠林",
+        "昆莱山",
+        "时光之穴"
+    },
+    Line = {},
+    Limit = {
+        InLine = {},
+        RemoveFromLine = {},
+        Menu = {},
+        InstanceList = {},
+        InstanceLocation = {},
+        Advice = {},
+        AutoResponse = {}
+    }
+}
+
+Frame = CreateFrame("Frame")
+
+Frame:SetScript("OnEvent", function(self, event, ...)
+    Event[event](...)
+end)
+
+Frame:RegisterEvent("ADDON_LOADED")

@@ -6,120 +6,125 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-local AddonName, InstanceScheduler = ...
+local ADDON, Addon = ...
 
-local pairs, ipairs, table = pairs, ipairs, table
+setfenv(1, Addon)
 
-local UnitName, UnitInParty, IsInGroup, GetNumGroupMembers, UnitIsGroupLeader, UnitPosition
-    = UnitName, UnitInParty, IsInGroup, GetNumGroupMembers, UnitIsGroupLeader, UnitPosition
+local message, sender
+    
+Event = {}
 
-local SetRaidDifficultyID, SetLegacyRaidDifficultyID, GetRaidDifficultyID, GetLegacyRaidDifficultyID
-    = SetRaidDifficultyID, SetLegacyRaidDifficultyID, GetRaidDifficultyID, GetLegacyRaidDifficultyID
-
-InstanceScheduler["CHAT_MSG_WHISPER"] = function(...)
-    local _, message, sender = ...
-    if UnitPosition("player") and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
-        if InstanceScheduler:First(message, "1") then
-            for i, v in ipairs(InstanceScheduler.Variables.Line) do
+Event["CHAT_MSG_WHISPER"] = function(...)
+    message, sender = ...
+    if UnitPosition("player") and sender ~= Util:NameFormat(UnitName("player")) then
+        if Util:First(message, Messages["InLine"].key) and not Variables.Limit.InLine[sender] then
+            Variables.Limit.InLine[sender] = true
+            for i, v in ipairs(Variables.Line) do
                 if sender == v then
-                    InstanceScheduler:SendWhisperMessage("AlreadyInLine", sender, i)
+                    Util:SendWhisperMessage(Messages["InLine"].response, sender, i)
                     return
                 end
             end
-            if not UnitInParty(sender) and InstanceScheduler.InGroupPlayer ~= sender then
-                table.insert(InstanceScheduler.Variables.Line, sender)
-                InstanceScheduler:SendWhisperMessage("AddInLine", sender, #InstanceScheduler.Variables.Line)
+            if not UnitInParty(sender) and Variables.InGroupPlayer ~= sender then
+                table.insert(Variables.Line, sender)
+                Util:SendWhisperMessage(Messages["InLine"].response, sender, #Variables.Line)
             end
-        elseif InstanceScheduler:First(message, "0") and InstanceScheduler.InGroupPlayer ~= sender then
-            for i, v in ipairs(InstanceScheduler.Variables.Line) do
+        elseif Util:First(message, Messages["RemoveFromLine"].key) and not Variables.Limit.RemoveFromLine[sender] and Variables.InGroupPlayer ~= sender then
+            Variables.Limit.RemoveFromLine[sender] = true
+            for i, v in ipairs(Variables.Line) do
                 if sender == v then
-                    table.remove(InstanceScheduler.Variables.Line, i)
-                    InstanceScheduler:SendWhisperMessage("RemoveFromLine", sender)
+                    table.remove(Variables.Line, i)
+                    Util:SendWhisperMessage(Messages["RemoveFromLine"].response, sender)
                     return
                 end
             end
-            InstanceScheduler:SendWhisperMessage("NotInLine", sender)
-        elseif InstanceScheduler:First(message, "3") then
-            InstanceScheduler:SendWhisperMessage("Menu", sender)
-        elseif InstanceScheduler:First(message, "5") then
-            InstanceScheduler:SendWhisperMessage("InstanceList", sender)
-        elseif InstanceScheduler:First(message, "6") then
-            InstanceScheduler:SendWhisperMessage("InstanceLocation", sender)
-        elseif InstanceScheduler:First(message, "7") then
-            InstanceScheduler:SendWhisperMessage("Advice", sender)
-        else
-            InstanceScheduler:SendWhisperMessage("AutoRepeat", sender)
+        elseif Util:First(message, Messages["Menu"].key) and not Variables.Limit.Menu[sender] then
+            Variables.Limit.Menu[sender] = true
+            Util:SendWhisperMessage(Messages["Menu"].response, sender)
+        elseif Util:First(message, Messages["InstanceList"].key) and not Variables.Limit.InstanceList[sender] then
+            Variables.Limit.InstanceList[sender] = true
+            Util:SendWhisperMessage(Messages["InstanceList"].response, sender)
+        elseif Util:First(message, Messages["InstanceLocation"].key) and not Variables.Limit.InstanceLocation[sender] then
+            Variables.Limit.InstanceLocation[sender] = true
+            Util:SendWhisperMessage(Messages["InstanceLocation"].response, sender)
+        elseif Util:First(message, Messages["Advice"].key) and not Variables.Limit.Advice[sender] then
+            Variables.Limit.Advice[sender] = true
+            Util:SendWhisperMessage(Messages["Advice"].response, sender)
+        elseif not Variables.Limit.AutoResponse[sender] then
+            Variables.Limit.AutoResponse[sender] = true
+            Util:SendWhisperMessage(Messages["AutoResponse"].response, sender)
         end
     end
 end
 
-InstanceScheduler["CHAT_MSG_PARTY"] = function(...)
-    local _, message, sender = ...
-    if InstanceScheduler:First(message, "10") and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
+Event["CHAT_MSG_PARTY"] = function(...)
+    message, sender = ...
+    if Util:First(message, Messages["ChangeDifficulty"].key) and sender ~= Util:NameFormat(UnitName("player")) then
         SetLegacyRaidDifficultyID(3)
-        InstanceScheduler:SendPartyMessage("ChangeDifficulty")
+        Util:SendPartyMessage(Messages["ChangeDifficulty"].response)
     end
-    if InstanceScheduler:First(message, "yx") and sender ~= InstanceScheduler:NameFormat(UnitName("player")) then
+    if Util:First(message, Messages["ChangeHero"].key) and sender ~= Util:NameFormat(UnitName("player")) then
         SetRaidDifficultyID(15)
         SetLegacyRaidDifficultyID(5)
-        InstanceScheduler:SendPartyMessage("ChangeDifficulty")
+        Util:SendPartyMessage(Messages["ChangeHero"].response)
     end
 end
 
-InstanceScheduler["CHAT_MSG_GUILD"] = function(...)
+--[[
+Event["CHAT_MSG_GUILD"] = function(...)
     local CommandPrefix, _, message = InstanceScheduler.Commands.CommandPrefix, ...
     if message:len() >= CommandPrefix:len() and message:sub(1, CommandPrefix:len()) == CommandPrefix then
         local arg = message:sub(CommandPrefix:len() + 1, -1)
         if arg:len() >= 4 and arg:sub(1, 4) == "info" then
-            InstanceScheduler:CommandInfo(arg:len() == 4 and nil or arg:sub(5, -1))
+            Util:CommandInfo(arg:len() == 4 and nil or arg:sub(5, -1))
         end
     end
 end
+--]]
 
-InstanceScheduler["PARTY_INVITE_REQUEST"] = function(...)
+Event["PARTY_INVITE_REQUEST"] = function(...)
     DeclineGroup()
 end
 
-InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
-    local frame = ...
-    if InstanceScheduler.Status then
-        if UnitPosition("player") and not InstanceScheduler.TempStatus then
-            frame:RegisterEvent("CHAT_MSG_WHISPER")
-            frame:RegisterEvent("CHAT_MSG_PARTY")
-            frame:RegisterEvent("PARTY_INVITE_REQUEST")
-            frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-            frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
-            InstanceScheduler.TempStatus = true
-            InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.TempStatus)
-        elseif InstanceScheduler.TempStatus and not UnitPosition("player") then
-            frame:UnregisterEvent("CHAT_MSG_WHISPER")
-            frame:UnregisterEvent("CHAT_MSG_PARTY")
-            frame:UnregisterEvent("PARTY_INVITE_REQUEST")
-            frame:SetScript("OnUpdate", nil)
-            InstanceScheduler.TempStatus = false
-            InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.TempStatus)
+Event["GROUP_ROSTER_UPDATE"] = function(...)
+    if Variables.Status then
+        if UnitPosition("player") and not Variables.TempStatus then
+            Frame:RegisterEvent("CHAT_MSG_WHISPER")
+            Frame:RegisterEvent("CHAT_MSG_PARTY")
+            Frame:RegisterEvent("PARTY_INVITE_REQUEST")
+            Frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+            Variables.TempStatus = true
+            _ = SavedVariables.Extended and Util:ExtendsSavedInstance(Variables.TempStatus)
+        elseif Variables.TempStatus and not UnitPosition("player") then
+            Frame:UnregisterEvent("CHAT_MSG_WHISPER")
+            Frame:UnregisterEvent("CHAT_MSG_PARTY")
+            Frame:UnregisterEvent("PARTY_INVITE_REQUEST")
+            Variables.TempStatus = false
+            _ = SavedVariables.Extended and Util:ExtendsSavedInstance(Variables.TempStatus)
             return
         end
     end
-    if InstanceScheduler.TempStatus then
+    if Variables.TempStatus then
         if IsInGroup() then
-            if InstanceScheduler.TempMembers == 0 and GetNumGroupMembers() == 1 then
-                InstanceScheduler:InviteSchedule(0)
+            if Variables.TempMembers == 0 and GetNumGroupMembers() == 1 then
+                Variables.TempTime = GetTime()
             end
-            if GetNumGroupMembers() == 2 and InstanceScheduler.TempMembers == 1 and UnitIsGroupLeader("player") then
-                InstanceScheduler:PartySchedule(0)
+            if GetNumGroupMembers() == 2 and Variables.TempMembers == 1 and UnitIsGroupLeader("player") then
+                Variables.InGroupTime = GetTime()
             end
-            if GetNumGroupMembers() >= 3 and InstanceScheduler.TempMembers < GetNumGroupMembers() then
+            if GetNumGroupMembers() >= 3 and Variables.TempMembers < GetNumGroupMembers() then
                 for i = GetNumGroupMembers() - 1, 2 do
                     local name, realm = UnitName("party" .. i)
-                    local fullname = InstanceScheduler:NameFormat(name, realm, true)
+                    local fullname = Util:NameFormat(name, realm, true)
                     UninviteUnit(fullname)
-                    InstanceScheduler:SendWhisperMessage("NetProblem", fullname)
+                    Util:SendWhisperMessage("NetProblem", fullname)
                 end
             end
         else
-            if InstanceScheduler.InGroupPlayer ~= "" then
-                InstanceScheduler.InGroupPlayer = ""
+            Variables.TempTime = 0
+            Variables.InGroupTime = 0
+            if Variables.InGroupPlayer ~= "" then
+                Variables.InGroupPlayer = ""
             end
             if GetRaidDifficultyID() ~= 14 then
                 SetRaidDifficultyID(14)
@@ -128,45 +133,41 @@ InstanceScheduler["GROUP_ROSTER_UPDATE"] = function(...)
                 SetLegacyRaidDifficultyID(4)
             end
         end
-        InstanceScheduler.TempMembers = IsInGroup() and GetNumGroupMembers() or 0
+        Variables.TempMembers = IsInGroup() and GetNumGroupMembers() or 0
     end
 end
 
-InstanceScheduler["VARIABLES_LOADED"] = function(...)
-    local frame = ...
-    local ver = GetAddOnMetadata(AddonName, "Version")
-    if not InstanceSchedulerVariables then
-        InstanceSchedulerVariables =
-        {
-            Version = ver,
-            Line = {},
-            Users = {},
-            Total = 0
-        }
-    elseif not InstanceSchedulerVariables.Version then
-        InstanceSchedulerVariables.Version = ver
-        local temp = InstanceSchedulerVariables.Users
-        InstanceSchedulerVariables.Users = {}
-        local total = 0
-        for k, v in pairs(temp) do
-            local realm = InstanceScheduler:GetRealm(k)
-            if not InstanceSchedulerVariables.Users[realm] then
-                InstanceSchedulerVariables.Users[realm] = {}
-            end
-            InstanceSchedulerVariables.Users[realm][k] = v
-            total = total + v
+Event["ADDON_LOADED"] = function(...)
+    if ADDON == select(1, ...) then
+        Frame:UnregisterEvent("ADDON_LOADED")
+        local ver = GetAddOnMetadata(ADDON, "Version")
+        SavedVariables = _G.InstanceSchedulerVariables
+        if not SavedVariables or SavedVariables.Line then
+            SavedVariables =
+            {
+                Messages = Messages,
+                AUTO_START = true,
+                Extended = true,
+                Extended_Only = true,
+                LEAVE_TIME = 60,
+                Version = ver,
+                Users = {},
+                Total = 0
+            }
+            _G.InstanceSchedulerVariables = SavedVariables
         end
-        InstanceSchedulerVariables.Total = total
-    elseif InstanceSchedulerVariables ~= ver then
-        InstanceSchedulerVariables.Version = ver
-    end
-    InstanceScheduler.Variables = InstanceSchedulerVariables
-    frame:UnregisterEvent("VARIABLES_LOADED")
-    if InstanceScheduler.Status then
-        frame:RegisterEvent("CHAT_MSG_WHISPER")
-        frame:RegisterEvent("CHAT_MSG_PARTY")
-        frame:RegisterEvent("PARTY_INVITE_REQUEST")
-        frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-        frame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
+        Messages = SavedVariables.Messages
+        if SavedVariables.AUTO_START then
+            Variables.Status = true
+            Frame:RegisterEvent("CHAT_MSG_WHISPER")
+            Frame:RegisterEvent("CHAT_MSG_PARTY")
+            Frame:RegisterEvent("PARTY_INVITE_REQUEST")
+            Frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+            C_Timer.After(2, Scheduler)
+        end
+        LibStub("AceConfig-3.0"):RegisterOptionsTable("InstanceScheduler", Option)
+        LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Locale["InstanceScheduler"])
+        LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Option.args.basic.name, Locale["InstanceScheduler"], "basic")
+        LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Option.args.advanced.name, Locale["InstanceScheduler"], "advanced")
     end
 end

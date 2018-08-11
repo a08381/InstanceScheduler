@@ -6,20 +6,18 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-local _, InstanceScheduler = ...
+local _, Addon = ...
 
-local pairs, table, select = pairs, table, select
+setfenv(1, Addon)
 
-local SendChatMessage, GetRealmName, GetMapID, GetMapInfo
-    = SendChatMessage, GetRealmName, C_Map.GetBestMapForUnit, C_Map.GetMapInfo
+Util = {}
 
 local map = {}
 local none = {}
 
 local messages, fullName, res, temp, mapid, player
 
-function InstanceScheduler:SendPartyMessage(key, ...)
-    messages = self.Messages[key] or key
+function Util:SendPartyMessage(messages, ...)
     if select('#', ...) > 0 then
         messages = messages:format(...)
     end
@@ -28,8 +26,7 @@ function InstanceScheduler:SendPartyMessage(key, ...)
     end
 end
 
-function InstanceScheduler:SendWhisperMessage(key, name, ...)
-    messages = self.Messages[key] or key
+function Util:SendWhisperMessage(messages, name, ...)
     if select('#', ...) > 0 then
         messages = messages:format(...)
     end
@@ -38,8 +35,7 @@ function InstanceScheduler:SendWhisperMessage(key, name, ...)
     end
 end
 
-function InstanceScheduler:SendGuildMessage(key, ...)
-    messages = self.Commands[key] or key
+function Util:SendGuildMessage(messages, ...)
     if select('#', ...) > 0 then
         messages = messages:format(...)
     end
@@ -48,7 +44,7 @@ function InstanceScheduler:SendGuildMessage(key, ...)
     end
 end
 
-function InstanceScheduler:NameFormat(name, realm, hide)
+function Util:NameFormat(name, realm, hide)
     fullName = name
     if not realm or realm == "" then
         if not hide then
@@ -60,11 +56,11 @@ function InstanceScheduler:NameFormat(name, realm, hide)
     return fullName
 end
 
-function InstanceScheduler:First(main, str)
-    return main:len() >= str:len() and main:sub(1, str:len()) == str:lower()
+function Util:First(main, str)
+    return main:len() >= str:len() and main:sub(1, str:len()):lower() == str:lower()
 end
 
-function InstanceScheduler:Split(str)
+function Util:Split(str)
     res = {}
     if not str:match('\r?\n') then
         table.insert(res, str)
@@ -79,27 +75,27 @@ function InstanceScheduler:Split(str)
     return res
 end
 
-function InstanceScheduler:GetPlayerMapName(unit)
-    mapid = GetMapID(unit)
+function Util:GetPlayerMapName(unit)
+    mapid = C_Map.GetBestMapForUnit(unit)
     if not mapid then return end
     if not map[mapid] then
-        map[mapid] = GetMapInfo(mapid) or none
+        map[mapid] = C_Map.GetMapInfo(mapid) or none
     end
     return map[mapid].name
 end
 
-function InstanceScheduler:GetRealm(fullName)
+function Util:GetRealm(fullName)
     return fullName:sub(fullName:find("-") + 1, -1)
 end
 
-function InstanceScheduler:ExtendsSavedInstance(stats)
+function Util:ExtendsSavedInstance(stats)
     for i=1,GetNumSavedInstances() do
         local a, _, _, b, _, c = GetSavedInstanceInfo(i)
-        for _,v in pairs(self.SavedInstances) do
+        for _,v in pairs(Variables.SavedInstances) do
             if v == a and c~=stats then
-                for _, v in pairs(self.DifficultyID) do
+                for _, v in pairs(Variables.DifficultyID) do
                     if v == b then
-                        SetSavedInstanceExtend(i, stats)
+                        SetSavedInstanceExtend(i, stats or SavedVariables.Extended_Only)
                         break
                     end
                 end
@@ -108,26 +104,25 @@ function InstanceScheduler:ExtendsSavedInstance(stats)
     end
 end
 
-function InstanceScheduler:SwitchOn()
-    if InstanceScheduler.Status then
-        InstanceSchedulerFrame:UnregisterAllEvents()
-        InstanceSchedulerFrame:SetScript("OnUpdate", nil)
-        InstanceScheduler.Status = false
-        InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.Status)
-        DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已禁用")
+function Util:SwitchOn()
+    if Variables.Status then
+        Frame:UnregisterAllEvents()
+        Variables.Status = false
+        Util:ExtendsSavedInstance(Variables.Status)
+        DEFAULT_CHAT_FRAME:AddMessage(Locale.PrintPrefix..Locale.SwitchOff)
     else
-        InstanceSchedulerFrame:RegisterEvent("CHAT_MSG_WHISPER")
-        InstanceSchedulerFrame:RegisterEvent("CHAT_MSG_PARTY")
-        InstanceSchedulerFrame:RegisterEvent("PARTY_INVITE_REQUEST")
-        InstanceSchedulerFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
-        InstanceSchedulerFrame:SetScript("OnUpdate", InstanceScheduler.UpdateSchedule)
-        InstanceScheduler.Status = true
-        InstanceScheduler:ExtendsSavedInstance(InstanceScheduler.Status)
-        DEFAULT_CHAT_FRAME:AddMessage(InstanceScheduler.PrintPrefix.."已启用")
+        Frame:RegisterEvent("CHAT_MSG_WHISPER")
+        Frame:RegisterEvent("CHAT_MSG_PARTY")
+        Frame:RegisterEvent("PARTY_INVITE_REQUEST")
+        Frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+        Variables.Status = true
+        C_Timer.After(2, Scheduler)
+        Util:ExtendsSavedInstance(Variables.Status)
+        DEFAULT_CHAT_FRAME:AddMessage(Locale.PrintPrefix..Locale.SwitchOn)
     end
 end
 
-function InstanceScheduler:CommandInfo(str)
+function Util:CommandInfo(str)
     local stats = 0
     local fps = GetFramerate()
     local _, _, latencyHome, latencyWorld = GetNetStats()

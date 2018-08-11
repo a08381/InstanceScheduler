@@ -6,135 +6,103 @@
 -- To change this template use File | Settings | File Templates.
 --
 
-local _, InstanceScheduler = ...
+local _, Addon = ...
 
-local table, pairs, After, GetTime = table, pairs, C_Timer.After, GetTime
-local StaticPopup1, StaticPopup1Button1 = StaticPopup1, StaticPopup1Button1
+setfenv(1, Addon)
 
-local IsInGroup, GetNumGroupMembers, LeaveParty, UnitIsConnected, UnitPosition
-    = IsInGroup, GetNumGroupMembers, LeaveParty, UnitIsConnected, UnitPosition
-
-local ResetInstances, UnitName, PromoteToLeader, InviteUnit
-    = ResetInstances, UnitName, PromoteToLeader, InviteUnit
-
-function InstanceScheduler:InviteSchedule(times)
-    if IsInGroup() and GetNumGroupMembers() == 1 then
-        if times >= 5 then
-            LeaveParty()
-        else
-            After(1, function()
-                self:InviteSchedule(times + 1)
-            end)
+function Scheduler()
+    if not Variables.Status then return end
+    C_Timer.After(2, Scheduler)
+    if Variables.InGroupPlayer == "" then
+        if not IsInGroup() then
+            if #Variables.Line > 0 and UnitPosition("player") then
+                local sender = Variables.Line[1]
+                Variables.InGroupPlayer = sender
+                InviteUnit(sender)
+                table.remove(Variables.Line, 1)
+            end
         end
-    end
-end
-
-function InstanceScheduler:PartySchedule(times)
-    if IsInGroup() then
-        if UnitIsConnected("party1") then
-            local map = self:GetPlayerMapName("party1")
-            for _, v in pairs(self.LeaveMaps) do
-                if v == map then
-                    self:SendPartyMessage("InstanceProblem")
-                    After(0.5, function()
-                        LeaveParty()
-                    end)
+    else
+        if not IsInGroup() then
+            Variables.InGroupPlayer = ""
+        else
+            local members = GetNumGroupMembers()
+            local times = GetTime()
+            if members == 1 then
+                if Variables.TempTime ~= 0 and times - Variables.TempTime >= 8 then
+                    Variables.TempTime = 0
+                    LeaveParty()
                     return
                 end
-            end
-            ResetInstances()
-            self:SendPartyMessage("ResetComplete")
-            self.InGroupTime = GetTime()
-            After(1, function()
-                self:IntoInstanceSchedule()
-            end)
-        else
-            if times >= 6 then
-                local s = self:NameFormat(UnitName("party1"))
-                LeaveParty()
-                self:SendWhisperMessage("NetProblem", s)
-            else
-                After(1, function()
-                    self:PartySchedule(times + 1)
-                end)
-            end
-        end
-    end
-end
-
-function InstanceScheduler:IntoInstanceSchedule()
-    if IsInGroup() then
-        if not UnitPosition("party1") then
-            local name, realm = UnitName("party1")
-            local s = self:NameFormat(name, realm, true)
-            After(0.5, function()
-                if IsInGroup() then
-                    PromoteToLeader(s)
-                    self:SendPartyMessage("ChangeLeader")
-                    self:SendPartyMessage("LeaveMessage")
-                    After(0.5, function()
+            elseif members == 2 then
+                if not UnitIsConnected("party1") then
+                    if Variables.InGroupTime ~= 0 and times - Variables.InGroupTime >= 5 then
+                        Variables.InGroupTime = 0
+                        local s = Util:NameFormat(UnitName("party1"))
                         LeaveParty()
-                        local fullname = self:NameFormat(name, realm)
-                        local realm = self:GetRealm(fullname)
-                        if not self.Variables.Users[realm] then
-                            self.Variables.Users[realm] = {}
+                        Util:SendWhisperMessage(Messages["NetProblem"].response, s)
+                        return
+                    end
+                else
+                    if Variables.InGroupTime ~= 0 then
+                        Variables.InGroupTime = 0
+                        local map = Util:GetPlayerMapName("party1")
+                        for _, v in pairs(Variables.LeaveMaps) do
+                            if v == map then
+                                Util:SendPartyMessage(Messages["InstanceProblem"].response)
+                                C_Timer.After(0.5, function()
+                                    LeaveParty()
+                                end)
+                                return
+                            end
                         end
-                        local times = self.Variables.Users[realm][fullname]
-                        if times then
-                            self.Variables.Users[realm][fullname] = times + 1
-                        else
-                            self.Variables.Users[realm][fullname] = 1
-                        end
-                        self.Variables.Total = self.Variables.Total + 1
-                    end)
-                end
-            end)
-        else
-            if not UnitIsConnected("party1") then
-                LeaveParty()
-            elseif GetTime() - self.InGroupTime > 20 and #self.Variables.Line > 0 then
-                LeaveParty()
-            else
-                After(1, function()
-                    self:IntoInstanceSchedule()
-                end)
-            end
-        end
-    end
-end
-
-function InstanceScheduler:UpdateSchedule()
-    local t = GetTime()
-    if t - InstanceScheduler.InviteSchedulerTempTime > 1 then
-        InstanceScheduler.InviteSchedulerTempTime = t
-        if not IsInGroup() then
-            if InstanceScheduler.InGroupPlayer == "" then
-                if #InstanceScheduler.Variables.Line > 0 and UnitPosition("player") then
-                    local sender = InstanceScheduler.Variables.Line[1]
-                    InstanceScheduler.InGroupPlayer = sender
-                    InviteUnit(sender)
-                    table.remove(InstanceScheduler.Variables.Line, 1)
-                end
-            else
-                InstanceScheduler.CheckTime = InstanceScheduler.CheckTime or 0
-                InstanceScheduler.CheckTime = InstanceScheduler.CheckTime + 1
-                if InstanceScheduler.CheckTime >= 5 then
-                    if InstanceScheduler.CheckTime >= 15 then
-                        InstanceScheduler.CheckTime = 0
-                        InstanceScheduler.InGroupPlayer = ""
+                        ResetInstances()
+                        Util:SendPartyMessage(Messages["ResetComplete"].response)
+                        Variables.RunTime = GetTime()
                     else
-                        InviteUnit(InstanceScheduler.InGroupPlayer)
+                        if Variables.RunTime ~= 0 and times - Variables.RunTime >= SavedVariables.LEAVE_TIME then
+                            Variables.RunTime = 0
+                            LeaveParty()
+                            return
+                        else
+                            if not UnitPosition("party1") then
+                                local name, realm = UnitName("party1")
+                                local s = Util:NameFormat(name, realm, true)
+                                Util:SendPartyMessage(Messages["ChangeLeader"].response)
+                                PromoteToLeader(s)
+                                Util:SendPartyMessage(Messages["Leave"].response)
+                                C_Timer.After(0.5, function()
+                                    LeaveParty()
+                                    local fullname = Util:NameFormat(name, realm)
+                                    local realm = Util:GetRealm(fullname)
+                                    if not SavedVariables.Users[realm] then
+                                        SavedVariables.Users[realm] = {}
+                                    end
+                                    local times = SavedVariables.Users[realm][fullname]
+                                    if times then
+                                        SavedVariables.Users[realm][fullname] = times + 1
+                                    else
+                                        SavedVariables.Users[realm][fullname] = 1
+                                    end
+                                    SavedVariables.Total = SavedVariables.Total + 1
+                                end)
+                            end
+                        end
                     end
                 end
             end
-        else
-            InstanceScheduler.CheckTime = 0
         end
     end
     if StaticPopup1:IsShown() and StaticPopup1Button1:GetText() == "取消" then
-        if t - InstanceScheduler.TempTime > 1 then
-            StaticPopup1Button1:Click()
-            InstanceScheduler.TempTime = t
-        end
+        StaticPopup1Button1:Click()
     end
+    Variables.Limit = {
+        InLine = {},
+        RemoveFromLine = {},
+        Menu = {},
+        InstanceList = {},
+        InstanceLocation = {},
+        Advice = {},
+        AutoResponse = {}
+    }
 end
