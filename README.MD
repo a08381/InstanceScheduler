@@ -1,5 +1,6 @@
 # CD进度插件 InstanceScheduler
 这个插件是用于帮助使用进度的玩家自动化的插件
+###### 请注意，这个使用说明暂时严重过期，下面说的请一个字也不要信！
 ## 队长模式 LeaderMode （暂无法正常使用）
 下载后将 `Addons` 目录里的 `InstanceScheduler_LeaderMode` 放入游戏的 `Interface\Addons` 目录内即可<br/>
 ~~_使用方法未完成_~~
