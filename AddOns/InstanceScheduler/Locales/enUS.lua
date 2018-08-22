@@ -7,158 +7,158 @@
 --
 local _, Addon = ...
 
-if not Addon.Locale then Addon.Locale = {} end
-if not Addon.Messages then Addon.Messages = {} end
+Addon.Locale = {}
+Addon.Messages = {}
 
 local L = Addon.Locale
 local M = Addon.Messages
 
-L["InstanceScheduler"] = "¸±±¾½ø¶È¹²Ïí"
-L["PrintPrefix"] = "cff99ffff¸±±¾½ø¶È¹²Ïí|r - "
+L["InstanceScheduler"] = "å‰¯æœ¬è¿›åº¦å…±äº«"
+L["PrintPrefix"] = "cff99ffffå‰¯æœ¬è¿›åº¦å…±äº«|r - "
 
-L["SwitchOn"] = "ÒÑÆôÓÃ"
-L["SwitchOff"] = "ÒÑ½ûÓÃ"
+L["SwitchOn"] = "å·²å¯ç”¨"
+L["SwitchOff"] = "å·²ç¦ç”¨"
 
-L["basic_option"] = "»ù±¾ÉèÖÃ"
-L["enable"] = "ÆôÓÃ"
-L["auto_start"] = "×Ô¶¯Æô¶¯"
-L["raid_setings"] = "¸±±¾ÉèÖÃ"
-L["extend"] = "ÑÓ³¤¸±±¾"
-L["only_extend"] = "½öÑÓ³¤"
-L["other_setings"] = "ÆäËûÉèÖÃ"
-L["leave_time"] = "µÈ´ý½ø±¾Ê±³¤"
-L["advanced_option"] = "½ø½×ÉèÖÃ"
-L["message_select"] = "Óï¾äÑ¡Ôñ"
-L["message_key"] = "¹Ø¼ü×Ö"
-L["message_response"] = "ÏûÏ¢»Ø¸´"
+L["basic_option"] = "åŸºæœ¬è®¾ç½®"
+L["enable"] = "å¯ç”¨"
+L["auto_start"] = "è‡ªåŠ¨å¯åŠ¨"
+L["raid_setings"] = "å‰¯æœ¬è®¾ç½®"
+L["extend"] = "å»¶é•¿å‰¯æœ¬"
+L["only_extend"] = "ä»…å»¶é•¿"
+L["other_setings"] = "å…¶ä»–è®¾ç½®"
+L["leave_time"] = "ç­‰å¾…è¿›æœ¬æ—¶é•¿"
+L["advanced_option"] = "è¿›é˜¶è®¾ç½®"
+L["message_select"] = "è¯­å¥é€‰æ‹©"
+L["message_key"] = "å…³é”®å­—"
+L["message_response"] = "æ¶ˆæ¯å›žå¤"
 
-_G["BINDING_HEADER_INSTANCESCHEDULER"] = "¸±±¾½ø¶È¹²Ïí"
-_G["BINDING_NAME_SWITCHON"] = "ÇÐ»» ¿ª/¹Ø"
+_G["BINDING_HEADER_INSTANCESCHEDULER"] = "å‰¯æœ¬è¿›åº¦å…±äº«"
+_G["BINDING_NAME_SWITCHON"] = "åˆ‡æ¢ å¼€/å…³"
 
 M["AutoResponse"] = {
-    name = "×Ô¶¯»Ø¸´",
+    name = "è‡ªåŠ¨å›žå¤",
     response = [[
-    ±¾²å¼þÍêÈ«Ãâ·Ñ£¬ÈÎºÎ¶µÊÛÃâ·ÑCDºêµÄ¶¼ÊÇÆ­×Ó
+    æœ¬æ’ä»¶å®Œå…¨å…è´¹ï¼Œä»»ä½•å…œå”®å…è´¹CDå®çš„éƒ½æ˜¯éª—å­
     ]]
 }
 M["Menu"] = {
-    name = "¸±±¾½ø¶È²Ëµ¥",
+    name = "å‰¯æœ¬è¿›åº¦èœå•",
     key = "3",
     response = [[
-    µ½±¾ÃÜ 1 £¬ÅÅ¶ÓµÈÎÒ×éÄã
-    È¡ÏûÅÅ¶ÓÃÜ 0
-    ²éÑ¯¸±±¾Çåµ¥ÃÜ 5
-    ²éÑ¯¸±±¾×ø±êÃÜ 6
-    ²éÑ¯¸÷¸±±¾×¢ÒâÊÂÏîÃÜ 7
+    åˆ°æœ¬å¯† 1 ï¼ŒæŽ’é˜Ÿç­‰æˆ‘ç»„ä½ 
+    å–æ¶ˆæŽ’é˜Ÿå¯† 0
+    æŸ¥è¯¢å‰¯æœ¬æ¸…å•å¯† 5
+    æŸ¥è¯¢å‰¯æœ¬åæ ‡å¯† 6
+    æŸ¥è¯¢å„å‰¯æœ¬æ³¨æ„äº‹é¡¹å¯† 7
     ]]
 }
 M["InstanceList"] = {
-    name = "¸±±¾ÁÐ±í",
+    name = "å‰¯æœ¬åˆ—è¡¨",
     key = "5",
     response = [[
-    ºÚ°µÉñµî¡¾µ°µ¶¡¿¡°ÀûÓÃÊ±¹âBUG£¬ÎÒÃÇÔÝÊ±¿ÉÒÔÌá¹©Õâ¸öCDÁË£¬ÇëÃÜ7²é¿´Õâ¸öCDµÄ×¢ÒâÊÂÏî¡£
-    ±ù¹Ú±¤ÀÝ¡¾ÎÞµÐ¡¿
-    °Â¶Å¶û¡¾·É»úÍ·¡¿
-    ·çÉñÍõ×ù¡¾ÄÏ·çÓ×Áú¡¿
-    »ðÑæÖ®µØ¡¾Â¹¿ø¡¿
-    ¾ÞÁúÖ®»êCD´¦ÓÚBUG×´Ì¬£¬ÔÝÍ£Ìá¹©£¬´ýBLZÐÞ¸´
-    Ä§¹Å±¦¿âCD´¦ÓÚBUG×´Ì¬£¬ÔÝÍ£Ìá¹©£¬´ýBLZÐÞ¸´
-    À×ÉñÍõ×ùCD´¦ÓÚBUG×´Ì¬£¬ÔÝÍ£Ìá¹©£¬´ýBLZÐÞ¸´
-    ÓÀ´ºÌ¨CD´¦ÓÚBUG×´Ì¬£¬ÔÝÍ£Ìá¹©£¬´ýBLZÐÞ¸´
-    ¾öÕ½°Â¸ñ¡¾°ÁÖ®É··¿¼ä¡¿ÃÕÓïÈË×øÆï²½Öè¡¢¡¾HÐ¡ºðCD¡¿£¨Ðè½ø×éºó¶ÓÎéÆµµÀ´òYX10£¬È»ºó½ø±¾£©
-    ºÚÒíÑª»·¡¾ÄÜÁ¿ºéÁ÷¡¿FM»ÃÏó
-    ºÚÊ¯ÖýÔì³§¡¾ºÚÊ¯Ö®Ó¡¡¿FM»ÃÏó
-    µØÓü»ð±¤ÀÝ¡¾Ñª»·Ö®Ó¡¡¿FM»ÃÏó
-    ÐèÇó¡¾¾öÕ½°Â¸ñ£ºË÷¿Ë¡¿ÇëÑ°ÇóÆäËûÌØÊâCD¾ýÌá¹©£¡
+    é»‘æš—ç¥žæ®¿ã€è›‹åˆ€ã€‘â€œåˆ©ç”¨æ—¶å…‰BUGï¼Œæˆ‘ä»¬æš‚æ—¶å¯ä»¥æä¾›è¿™ä¸ªCDäº†ï¼Œè¯·å¯†7æŸ¥çœ‹è¿™ä¸ªCDçš„æ³¨æ„äº‹é¡¹ã€‚
+    å†°å† å ¡åž’ã€æ— æ•Œã€‘
+    å¥¥æœå°”ã€é£žæœºå¤´ã€‘
+    é£Žç¥žçŽ‹åº§ã€å—é£Žå¹¼é¾™ã€‘
+    ç«ç„°ä¹‹åœ°ã€é¹¿ç›”ã€‘
+    å·¨é¾™ä¹‹é­‚CDå¤„äºŽBUGçŠ¶æ€ï¼Œæš‚åœæä¾›ï¼Œå¾…BLZä¿®å¤
+    é­”å¤å®åº“CDå¤„äºŽBUGçŠ¶æ€ï¼Œæš‚åœæä¾›ï¼Œå¾…BLZä¿®å¤
+    é›·ç¥žçŽ‹åº§CDå¤„äºŽBUGçŠ¶æ€ï¼Œæš‚åœæä¾›ï¼Œå¾…BLZä¿®å¤
+    æ°¸æ˜¥å°CDå¤„äºŽBUGçŠ¶æ€ï¼Œæš‚åœæä¾›ï¼Œå¾…BLZä¿®å¤
+    å†³æˆ˜å¥¥æ ¼ã€å‚²ä¹‹ç…žæˆ¿é—´ã€‘è°œè¯­äººåéª‘æ­¥éª¤ã€ã€Hå°å¼CDã€‘ï¼ˆéœ€è¿›ç»„åŽé˜Ÿä¼é¢‘é“æ‰“YX10ï¼Œç„¶åŽè¿›æœ¬ï¼‰
+    é»‘ç¿¼è¡€çŽ¯ã€èƒ½é‡æ´ªæµã€‘FMå¹»è±¡
+    é»‘çŸ³é“¸é€ åŽ‚ã€é»‘çŸ³ä¹‹å°ã€‘FMå¹»è±¡
+    åœ°ç‹±ç«å ¡åž’ã€è¡€çŽ¯ä¹‹å°ã€‘FMå¹»è±¡
+    éœ€æ±‚ã€å†³æˆ˜å¥¥æ ¼ï¼šç´¢å…‹ã€‘è¯·å¯»æ±‚å…¶ä»–ç‰¹æ®ŠCDå›æä¾›ï¼
     ]]
 }
 M["InstanceLocation"] = {
-    name = "¸±±¾×ø±ê",
+    name = "å‰¯æœ¬åæ ‡",
     key = "6",
     response = [[
-    ºÚ°µÉñµî¡¾ÍâÓò-Ó°ÔÂ¹È 71,46¡¿
-    ±ù¹Ú±¤ÀÝ¡¾±ù¹Ú±ù´¨ 53,85¡¿
-    °Â¶Å¶û¡¾·ç±©ÇÍ±Ú 42,18¡¿
-    ·çÉñÍõ×ù¡¾°Âµ¤Ä· 39,80¡¿
-    »ðÑæÖ®µØ¡¾º£¼Ó¶ûÉ½ 48,78¡¿
-    ¾öÕ½°Â¸ñ¡¾½õÐå¹È 72,45¡¿
-    ºÚÒíÑª»·¡¾È¼ÉÕÆ½Ô­ 25,25¡¿
-    ºÚÊ¯ÖýÔì³§¡¾¸ê¶ûµÂÂ¡ 51,28¡¿
-    µØÓü»ð±¤ÀÝ¡¾ËþÄÉ°²´ÔÁÖ 45,53¡¿
-    ÒÔÉÏ¸±±¾Èë¿Ú×ø±ê¾­±¾ÈËÇ××Ô¿±²â£¬ÕæÊµÓÐÐ§£¬²¿·ÖµØÇø×ø±êÐè×¼È·µ½ËùÔÚµØ
+    é»‘æš—ç¥žæ®¿ã€å¤–åŸŸ-å½±æœˆè°· 71,46ã€‘
+    å†°å† å ¡åž’ã€å†°å† å†°å· 53,85ã€‘
+    å¥¥æœå°”ã€é£Žæš´å³­å£ 42,18ã€‘
+    é£Žç¥žçŽ‹åº§ã€å¥¥ä¸¹å§† 39,80ã€‘
+    ç«ç„°ä¹‹åœ°ã€æµ·åŠ å°”å±± 48,78ã€‘
+    å†³æˆ˜å¥¥æ ¼ã€é”¦ç»£è°· 72,45ã€‘
+    é»‘ç¿¼è¡€çŽ¯ã€ç‡ƒçƒ§å¹³åŽŸ 25,25ã€‘
+    é»‘çŸ³é“¸é€ åŽ‚ã€æˆˆå°”å¾·éš† 51,28ã€‘
+    åœ°ç‹±ç«å ¡åž’ã€å¡”çº³å®‰ä¸›æž— 45,53ã€‘
+    ä»¥ä¸Šå‰¯æœ¬å…¥å£åæ ‡ç»æœ¬äººäº²è‡ªå‹˜æµ‹ï¼ŒçœŸå®žæœ‰æ•ˆï¼Œéƒ¨åˆ†åœ°åŒºåæ ‡éœ€å‡†ç¡®åˆ°æ‰€åœ¨åœ°
     ]]
 }
 M["Advice"] = {
-    name = "×¢ÒâÊÂÏî",
+    name = "æ³¨æ„äº‹é¡¹",
     key = "7",
     response = [[
-    ±ù¹Ú±¤ÀÝ±ØÐëÈ¾25ÈËÄÑ¶È£¬ÆäËû¸±±¾¿ÉÒÔ¶ÓÎéÆµµÀ´ò 10 ÇÐ10ÈËÄÑ¶È£¬²»Ó°Ïì×øÆïµôÂÊ¡£
-    ±ù¹Ú±¤ÀÝ±ØÐë25ÈËÆÕÍ¨ÄÑ¶È½ø±¾£¬½ø±¾ºóµÃµ½¶Ó³¤£¬×Ô¼ºÇÐ25HÄÑ¶È£¡£¨²å¼þ°æ¿ÉÊ¹ÓÃH°´Å¥£©
-    °Â¶Å¶ûÏÖÔÚ10ÈËÄÑ¶È¾Íµô×øÆï£¬×¢Òâ²»ÄÜºÍÈÎºÎÊØ»¤Õß¶Ô»°£¡
-    ·çÉñÍõ×ù¡¢»ðÔ´Ö®µØ¡¢¾ÞÁúÖ®»ê¡¢ºÚÒíÑª»·²»ÄÜÇÐHÄÑ¶È£¡
-    ¡¾HÐ¡ºðCD¡¿Ðè½ø×éºó¶ÓÎéÆµµÀ´òYX10£¬È»ºó½ø±¾£¨²å¼þ°æ¿ÉÊ¹ÓÃH°´Å¥£©
-    °²ÆäÀ­Éñµî½øÈ¥´ÓÍ·×ßÒ»È¦µ½¿ËËÕ¶÷·¿¼ä£¬Íê³É¡°ÇåÐÑµÄÃÎ÷Ê¡±×øÆï²½Öè
-    ÓÉÓÚ7.35¸üÐÂºó£¬Ä§¹ÅÉ½±¦¿â¡¢À×ÉñÍõ×ù¡¢ÓÀ´ºÌ¨¡¢¾ÞÁúÖ®»êµÄCDÓÐBUG£¬Ó¦¼±°æÔÝÍ£¹©Ó¦´Ë4¸ö¸±±¾µÄCD£¡
-    ÔÝÊ±ÐÂÔöµ°µ¶CD£¬ÒòÎªÄ¿Ç°ÓÐBUG¿ÉÒÔÈ¾Õâ¸öCD£¬Ìá¹©µ½BLZÐÞ¸´Õâ¸öBUGÎªÖ¹£¬½ø±¾´«ËÍÖ®ºó£¬ºÍ°¢¿¨Âê¶Ô»°£¬Äã»á±»BOSSÕ½Î§À¸µ²×¡£¬ÇëµÈ´ýÍÑÕ½ÖØÐÂ¶Ô»°£¬¼´¿ÉÕý³£½øÈ¥Ë¢µ°µ¶ÁË£¡
+    å†°å† å ¡åž’å¿…é¡»æŸ“25äººéš¾åº¦ï¼Œå…¶ä»–å‰¯æœ¬å¯ä»¥é˜Ÿä¼é¢‘é“æ‰“ 10 åˆ‡10äººéš¾åº¦ï¼Œä¸å½±å“åéª‘æŽ‰çŽ‡ã€‚
+    å†°å† å ¡åž’å¿…é¡»25äººæ™®é€šéš¾åº¦è¿›æœ¬ï¼Œè¿›æœ¬åŽå¾—åˆ°é˜Ÿé•¿ï¼Œè‡ªå·±åˆ‡25Héš¾åº¦ï¼ï¼ˆæ’ä»¶ç‰ˆå¯ä½¿ç”¨HæŒ‰é’®ï¼‰
+    å¥¥æœå°”çŽ°åœ¨10äººéš¾åº¦å°±æŽ‰åéª‘ï¼Œæ³¨æ„ä¸èƒ½å’Œä»»ä½•å®ˆæŠ¤è€…å¯¹è¯ï¼
+    é£Žç¥žçŽ‹åº§ã€ç«æºä¹‹åœ°ã€å·¨é¾™ä¹‹é­‚ã€é»‘ç¿¼è¡€çŽ¯ä¸èƒ½åˆ‡Héš¾åº¦ï¼
+    ã€Hå°å¼CDã€‘éœ€è¿›ç»„åŽé˜Ÿä¼é¢‘é“æ‰“YX10ï¼Œç„¶åŽè¿›æœ¬ï¼ˆæ’ä»¶ç‰ˆå¯ä½¿ç”¨HæŒ‰é’®ï¼‰
+    å®‰å…¶æ‹‰ç¥žæ®¿è¿›åŽ»ä»Žå¤´èµ°ä¸€åœˆåˆ°å…‹è‹æ©æˆ¿é—´ï¼Œå®Œæˆâ€œæ¸…é†’çš„æ¢¦é­‡â€åéª‘æ­¥éª¤
+    ç”±äºŽ7.35æ›´æ–°åŽï¼Œé­”å¤å±±å®åº“ã€é›·ç¥žçŽ‹åº§ã€æ°¸æ˜¥å°ã€å·¨é¾™ä¹‹é­‚çš„CDæœ‰BUGï¼Œåº”æ€¥ç‰ˆæš‚åœä¾›åº”æ­¤4ä¸ªå‰¯æœ¬çš„CDï¼
+    æš‚æ—¶æ–°å¢žè›‹åˆ€CDï¼Œå› ä¸ºç›®å‰æœ‰BUGå¯ä»¥æŸ“è¿™ä¸ªCDï¼Œæä¾›åˆ°BLZä¿®å¤è¿™ä¸ªBUGä¸ºæ­¢ï¼Œè¿›æœ¬ä¼ é€ä¹‹åŽï¼Œå’Œé˜¿å¡çŽ›å¯¹è¯ï¼Œä½ ä¼šè¢«BOSSæˆ˜å›´æ æŒ¡ä½ï¼Œè¯·ç­‰å¾…è„±æˆ˜é‡æ–°å¯¹è¯ï¼Œå³å¯æ­£å¸¸è¿›åŽ»åˆ·è›‹åˆ€äº†ï¼
     ]]
 }
 M["InLine"] = {
-    name = "¶ÓÁÐ¼ÓÈë",
+    name = "é˜Ÿåˆ—åŠ å…¥",
     key = "1",
     response = [[
-    ÄúÒÑ¾­¼ÓÈë¶ÓÁÐÁËÅ¶£¬µ±Ç°ÅÅÔÚµÚ %d Ãû£¬ÇëÄÍÐÄµÈ´ý~~~
-    ±¾²å¼þÍêÈ«Ãâ·Ñ£¬ÈÎºÎ¶µÊÛÃâ·ÑCDºêµÄ¶¼ÊÇÆ­×Ó
+    æ‚¨å·²ç»åŠ å…¥é˜Ÿåˆ—äº†å“¦ï¼Œå½“å‰æŽ’åœ¨ç¬¬ %d åï¼Œè¯·è€å¿ƒç­‰å¾…~~~
+    æœ¬æ’ä»¶å®Œå…¨å…è´¹ï¼Œä»»ä½•å…œå”®å…è´¹CDå®çš„éƒ½æ˜¯éª—å­
     ]]
 }
 M["InstanceProblem"] = {
-    name = "¸±±¾ÎÊÌâ",
+    name = "å‰¯æœ¬é—®é¢˜",
     response = [[
-    ·Ç³£±§Ç¸£¬ÔÚBLZµÄÄ³´ÎÏµÍ³¸üÐÂºó£¬¾ÞÁúÖ®»ê¡¢À×µçÍõ×ù¡¢ÓÀ´ºÌ¨¡¢Ä§¹ÅÉ½±¦¿âÕâËÄ¸ö¸±±¾ÔÝÊ±ÎÞ·¨È¾CD
-    ÎªÁË·ÀÖ¹ÄúµÄCD±»ºÚ£¬ÒÑ½«ÄúÒÆ³ö¶ÓÎé£¬¸øÄúÔì³ÉµÄ²»±ã¾´ÇëÁÂ½â
+    éžå¸¸æŠ±æ­‰ï¼Œåœ¨BLZçš„æŸæ¬¡ç³»ç»Ÿæ›´æ–°åŽï¼Œå·¨é¾™ä¹‹é­‚ã€é›·ç”µçŽ‹åº§ã€æ°¸æ˜¥å°ã€é­”å¤å±±å®åº“è¿™å››ä¸ªå‰¯æœ¬æš‚æ—¶æ— æ³•æŸ“CD
+    ä¸ºäº†é˜²æ­¢æ‚¨çš„CDè¢«é»‘ï¼Œå·²å°†æ‚¨ç§»å‡ºé˜Ÿä¼ï¼Œç»™æ‚¨é€ æˆçš„ä¸ä¾¿æ•¬è¯·è°…è§£
     ]]
 }
 M["RemoveFromLine"] = {
-    name = "¶ÓÁÐÒÆ³ý",
+    name = "é˜Ÿåˆ—ç§»é™¤",
     key = "0",
     response = [[
-    ÄúÒÑ±»ÒÆ³öÁË¶ÓÁÐ£¬¸ÐÐ»ÄúµÄÖ§³Ö
+    æ‚¨å·²è¢«ç§»å‡ºäº†é˜Ÿåˆ—ï¼Œæ„Ÿè°¢æ‚¨çš„æ”¯æŒ
     ]]
 }
 M["NetProblem"] = {
-    name = "ÍøÂç¹ÊÕÏ",
+    name = "ç½‘ç»œæ•…éšœ",
     response = [[
-    ºÜ±§Ç¸£¬ÓÉÓÚÄ³Ð©²»¿É¿¹Á¦ÒòËØ£¬ÒÑ½«ÄúÒÆ³ý¶ÓÎé£¬Çë³¢ÊÔÖØÐÂÉêÇë~~~
+    å¾ˆæŠ±æ­‰ï¼Œç”±äºŽæŸäº›ä¸å¯æŠ—åŠ›å› ç´ ï¼Œå·²å°†æ‚¨ç§»é™¤é˜Ÿä¼ï¼Œè¯·å°è¯•é‡æ–°ç”³è¯·~~~
     ]]
 }
 M["ResetComplete"] = {
-    name = "ÖØÖÃÍê±Ï",
+    name = "é‡ç½®å®Œæ¯•",
     response = [[
-    ¸±±¾ÒÑÖØÖÃ£¬Çë½ø±¾~~~
+    å‰¯æœ¬å·²é‡ç½®ï¼Œè¯·è¿›æœ¬~~~
     ]]
 }
 M["ChangeDifficulty"] = {
-    name = "ÈËÊý±ä¸ü",
+    name = "äººæ•°å˜æ›´",
     key = "10",
     response = [[
-    ¸±±¾ÄÑ¶ÈÒÑÐÞ¸ÄÖÁ10ÈË~~~
+    å‰¯æœ¬éš¾åº¦å·²ä¿®æ”¹è‡³10äºº~~~
     ]]
 }
 M["ChangeHero"] = {
-    name = "ÄÑ¶È±ä¸ü",
+    name = "éš¾åº¦å˜æ›´",
     key = "yx",
     response = [[
-    ¸±±¾ÄÑ¶ÈÒÑÐÞ¸ÄÖÁÓ¢ÐÛ~~~
+    å‰¯æœ¬éš¾åº¦å·²ä¿®æ”¹è‡³è‹±é›„~~~
     ]]
 }
 M["ChangeLeader"] = {
-    name = "×ª½»¶Ó³¤",
+    name = "è½¬äº¤é˜Ÿé•¿",
     response = [[
-    ÒÑ½«¶Ó³¤×ª½»£¬Ë¢ÎÞµÐÇë×ÔÐÐÐÞ¸ÄÄÑ¶ÈÎªÓ¢ÐÛÅ¶~~~
+    å·²å°†é˜Ÿé•¿è½¬äº¤ï¼Œåˆ·æ— æ•Œè¯·è‡ªè¡Œä¿®æ”¹éš¾åº¦ä¸ºè‹±é›„å“¦~~~
     ]]
 }
 M["Leave"] = {
-    name = "Àë¿ª¶ÓÎé",
+    name = "ç¦»å¼€é˜Ÿä¼",
     response = [[
-    ÆäËû¸±±¾Çë²»ÒªÐÞ¸ÄÄÑ¶È£¡£¡×£ÄúË¢³öÏëÒªµÄ×øÆï~~~
+    å…¶ä»–å‰¯æœ¬è¯·ä¸è¦ä¿®æ”¹éš¾åº¦ï¼ï¼ç¥æ‚¨åˆ·å‡ºæƒ³è¦çš„åéª‘~~~
     ]]
 }
