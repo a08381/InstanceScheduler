@@ -8,7 +8,7 @@
 **下载后将 `Addons` 目录里的 `InstanceScheduler_LineUpMode` 放入游戏的 `Interface\Addons` 目录内即可**<br/>
 **下载后将 `Addons` 目录里的 `InstanceScheduler_LineUpMode` 放入游戏的 `Interface\Addons` 目录内即可**<br/>
 ###### 重要的事情说三遍！！！
-###使用方法
+### 使用方法
 **请注意，您所能修改的东西只有 `Config.lua` **<br/>
 _特别的，请不要直接使用系统自带记事本打开，推荐使用 [NotePad++](https://notepad-plus-plus.org/download/)_
 <br/>您可以修改 `InstanceScheduler.AutoStart` 为 `false` 来关闭进入游戏自动启动功能<br/>

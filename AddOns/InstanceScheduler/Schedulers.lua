@@ -10,9 +10,7 @@ local _, Addon = ...
 
 setfenv(1, Addon)
 
-function Scheduler()
-    if not Variables.Status then return end
-    C_Timer.After(2, Scheduler)
+local function CheckTimer()
     if Variables.InGroupPlayer == "" then
         if not IsInGroup() then
             if #Variables.Line > 0 and UnitPosition("player") then
@@ -41,6 +39,9 @@ function Scheduler()
                         local s = Util:NameFormat(UnitName("party1"))
                         LeaveParty()
                         Util:SendWhisperMessage(Messages["NetProblem"].response, s)
+                        return
+                    elseif Variables.RunTime ~= 0 then
+                        LeaveParty()
                         return
                     end
                 else
@@ -93,6 +94,11 @@ function Scheduler()
             end
         end
     end
+end
+
+function Scheduler()
+    if not Variables.Status then return end
+    CheckTimer()
     if StaticPopup1:IsShown() and StaticPopup1Button1:GetText() == "取消" then
         StaticPopup1Button1:Click()
     end
@@ -105,4 +111,5 @@ function Scheduler()
         Advice = {},
         AutoResponse = {}
     }
+    C_Timer.After(2, Scheduler)
 end
