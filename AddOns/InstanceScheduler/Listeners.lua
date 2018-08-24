@@ -123,6 +123,7 @@ Event["GROUP_ROSTER_UPDATE"] = function(...)
         else
             Variables.TempTime = 0
             Variables.InGroupTime = 0
+            Variables.RunTime = 0
             if Variables.InGroupPlayer ~= "" then
                 Variables.InGroupPlayer = ""
             end
