@@ -70,7 +70,7 @@ Variables = {
 Frame = CreateFrame("Frame")
 
 Frame:SetScript("OnEvent", function(self, event, ...)
-    Event[event](...)
+    xpcall(Event[event], ErrorCatcher, ...)
 end)
 
 Frame:RegisterEvent("ADDON_LOADED")

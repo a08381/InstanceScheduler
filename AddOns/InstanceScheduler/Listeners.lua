@@ -94,13 +94,13 @@ Event["GROUP_ROSTER_UPDATE"] = function(...)
             Frame:RegisterEvent("PARTY_INVITE_REQUEST")
             Frame:RegisterEvent("GROUP_ROSTER_UPDATE")
             Variables.TempStatus = true
-            _ = SavedVariables.Extended and Util:ExtendsSavedInstance(Variables.TempStatus)
+            if SavedVariables.Extended then Util:ExtendsSavedInstance(Variables.TempStatus) end
         elseif Variables.TempStatus and not UnitPosition("player") then
             Frame:UnregisterEvent("CHAT_MSG_WHISPER")
             Frame:UnregisterEvent("CHAT_MSG_PARTY")
             Frame:UnregisterEvent("PARTY_INVITE_REQUEST")
             Variables.TempStatus = false
-            _ = SavedVariables.Extended and Util:ExtendsSavedInstance(Variables.TempStatus)
+            if SavedVariables.Extended then Util:ExtendsSavedInstance(Variables.TempStatus) end
             return
         end
     end

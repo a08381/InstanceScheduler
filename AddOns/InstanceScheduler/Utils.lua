@@ -17,6 +17,12 @@ local none = {}
 
 local messages, fullName, res, temp, mapid, player
 
+ErrorCatcher = function(err)
+    SELECTED_CHAT_FRAME:AddMessage("|cff99ffff【副本进度共享】|r|cfff1c232哦！代码出错了！|r")
+    SELECTED_CHAT_FRAME:AddMessage("cfff1c232请将以下内容截图发送给插件作者以便于调试|r")
+    SELECTED_CHAT_FRAME:AddMessage(err)
+end
+
 function Util:SendPartyMessage(messages, ...)
     if select('#', ...) > 0 then
         messages = messages:format(...)
@@ -45,6 +51,7 @@ function Util:SendGuildMessage(messages, ...)
 end
 
 function Util:NameFormat(name, realm, hide)
+    if not name then error("正常操作，坐下") return end
     fullName = name
     if not realm or realm == "" then
         if not hide then
@@ -95,7 +102,8 @@ function Util:ExtendsSavedInstance(stats)
             if v == a and c~=stats then
                 for _, v in pairs(Variables.DifficultyID) do
                     if v == b then
-                        SetSavedInstanceExtend(i, stats or SavedVariables.Extended_Only)
+                        if not stats and SavedVariables.Extended_Only then break end
+                        SetSavedInstanceExtend(i, stats)
                         break
                     end
                 end
