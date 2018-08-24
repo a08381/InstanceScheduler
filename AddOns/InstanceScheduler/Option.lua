@@ -19,6 +19,9 @@ local GetMessageTable = function()
                 key = {
                     name = Locale["message_key"],
                     type = "input",
+                    hidden = function(info)
+                        return not v.key
+                    end,
                     get = function(info)
                         return v.key
                     end,
@@ -29,6 +32,7 @@ local GetMessageTable = function()
                 response = {
                     name = Locale["message_response"],
                     type = "input",
+                    width = "full",
                     multiline = true,
                     get = function(info)
                         return v.response
@@ -139,8 +143,7 @@ Option = {
             name = Locale["advanced_option"],
             type = "group",
             childGroups = "tab",
-            args = {
-            }
+            args = {}
         }
     }
 }
