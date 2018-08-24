@@ -143,7 +143,7 @@ Event["ADDON_LOADED"] = function(...)
         Frame:UnregisterEvent("ADDON_LOADED")
         local ver = GetAddOnMetadata(ADDON, "Version")
         SavedVariables = _G.InstanceSchedulerVariables
-        if not SavedVariables or SavedVariables.Line then
+        if not SavedVariables or SavedVariables.Line or SavedVariables.Version ~= ver then
             SavedVariables =
             {
                 Messages = Messages,
@@ -169,6 +169,7 @@ Event["ADDON_LOADED"] = function(...)
         LibStub("AceConfig-3.0"):RegisterOptionsTable("InstanceScheduler", Option)
         LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Locale["InstanceScheduler"])
         LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Option.args.basic.name, Locale["InstanceScheduler"], "basic")
+        LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Option.args.message.name, Locale["InstanceScheduler"], "message")
         LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Option.args.advanced.name, Locale["InstanceScheduler"], "advanced")
     end
 end

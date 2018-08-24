@@ -27,7 +27,7 @@ L["only_extend"] = "仅延长"
 L["other_setings"] = "其他设置"
 L["leave_time"] = "等待进本时长"
 L["advanced_option"] = "进阶设置"
-L["message_select"] = "语句选择"
+L["message_option"] = "回复设置"
 L["message_key"] = "关键字"
 L["message_response"] = "消息回复"
 

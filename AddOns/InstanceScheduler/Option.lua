@@ -12,7 +12,33 @@ setfenv(1, Addon)
 local GetMessageTable = function()
     local args = {}
     for k, v in pairs(Messages) do
-        args[k] = v["name"]
+        args[k] = {
+            name = v.name,
+            type = "group",
+            args = {
+                key = {
+                    name = Locale["message_key"],
+                    type = "input",
+                    get = function(info)
+                        return v.key
+                    end,
+                    set = function(info, val)
+                        v.key = val
+                    end
+                },
+                response = {
+                    name = Locale["message_response"],
+                    type = "input",
+                    multiline = true,
+                    get = function(info)
+                        return v.response
+                    end,
+                    set = function(info, val)
+                        v.response = val
+                    end
+                }
+            }
+        }
     end
     return args
 end
@@ -104,25 +130,16 @@ Option = {
                 }
             }
         },
+        message = {
+            name = Locale["message_option"],
+            type = "group",
+            args = GetMessageTable()
+        },
         advanced = {
             name = Locale["advanced_option"],
             type = "group",
             childGroups = "tab",
             args = {
-                message = {
-                    name = Locale["message_select"],
-                    type = "select",
-                    style = "dropdown",
-                    values = GetMessageTable()
-                },
-                key = {
-                    name = Locale["message_key"],
-                    type = "input",
-                },
-                response = {
-                    name = Locale["message_response"],
-                    type = "input"
-                }
             }
         }
     }
