@@ -11,12 +11,25 @@ local ADDON, Addon = ...
 setfenv(1, Addon)
 
 local message, sender
-    
+
 Event = {}
 
 Event["CHAT_MSG_WHISPER"] = function(...)
     message, sender = ...
     if UnitPosition("player") and sender ~= Util:NameFormat(UnitName("player")) then
+        if SavedVariables.Blacklist[sender] and not Variables.Limit.Blacklist[sender] then
+            Variables.Limit.Blacklist[sender] = true
+            if SavedVariables.Blacklist[sender] ~= -1 then
+                local time = SavedVariables.Blacklist[sender] - time()
+                if time >= 0 then
+                    Util.SendWhisperMessage(Messages["InBlacklist"].response, sender, time)
+                else
+                    SavedVariables.Blacklist[sender] = nil
+                end
+            else
+                return
+            end
+        end
         if Util:First(message, Messages["InLine"].key) and not Variables.Limit.InLine[sender] then
             Variables.Limit.InLine[sender] = true
             for i, v in ipairs(Variables.Line) do
@@ -37,6 +50,18 @@ Event["CHAT_MSG_WHISPER"] = function(...)
                     Util:SendWhisperMessage(Messages["RemoveFromLine"].response, sender)
                     return
                 end
+            end
+        elseif Util:First(message, Messages["WaitPortal"].key) and not Variables.Limit.WaitPortal[sender] then
+            Variables.Limit.WaitPortal[sender] = true
+            for i, v in ipairs(Variables.PortalLine) do
+                if sender == v then
+                    Util:SendWhisperMessage(Messages["WaitPortal"].response, sender, i)
+                    return
+                end
+            end
+            if not UnitInParty(sender) and Variables.InGroupPlayer ~= sender then
+                table.insert(Variables.PortalLine, sender)
+                Util:SendWhisperMessage(Messages["WaitPortal"].response, sender, #Variables.PortalLine)
             end
         elseif Util:First(message, Messages["Menu"].key) and not Variables.Limit.Menu[sender] then
             Variables.Limit.Menu[sender] = true
@@ -83,6 +108,12 @@ end
 --]]
 
 Event["PARTY_INVITE_REQUEST"] = function(...)
+    sender = ...
+    if Variables.preBlacklist[sender] then
+        Variables.preBlacklist[sender] = Variables.preBlacklist[sender] + 1
+    else
+        Variables.preBlacklist[sender] = 1
+    end
     DeclineGroup()
 end
 
@@ -124,9 +155,8 @@ Event["GROUP_ROSTER_UPDATE"] = function(...)
             Variables.TempTime = 0
             Variables.InGroupTime = 0
             Variables.RunTime = 0
-            if Variables.InGroupPlayer ~= "" then
-                Variables.InGroupPlayer = ""
-            end
+            Variables.InGroupPlayer = ""
+            Variables.IsGroupPlayerForPortal = false
             if GetRaidDifficultyID() ~= 14 then
                 SetRaidDifficultyID(14)
             end
@@ -143,7 +173,7 @@ Event["ADDON_LOADED"] = function(...)
         Frame:UnregisterEvent("ADDON_LOADED")
         local ver = GetAddOnMetadata(ADDON, "Version")
         SavedVariables = _G.InstanceSchedulerVariables
-        if not SavedVariables or SavedVariables.Line or SavedVariables.Version ~= ver then
+        if not SavedVariables or SavedVariables.Line then
             SavedVariables =
             {
                 Messages = Messages,
@@ -157,6 +187,17 @@ Event["ADDON_LOADED"] = function(...)
             }
             _G.InstanceSchedulerVariables = SavedVariables
         end
+        if SavedVariables.Version ~= ver then
+            SavedVariables.Version = ver
+        end
+        if not SavedVariables.Blacklist then
+            SavedVariables.Blacklist = {}
+        end
+        for k, v in pairs(Messages) do
+            if not SavedVariables.Messages[k] then
+                SavedVariables.Messages[k] = v
+            end
+        end
         Messages = SavedVariables.Messages
         if SavedVariables.AUTO_START then
             Variables.Status = true
@@ -167,7 +208,7 @@ Event["ADDON_LOADED"] = function(...)
             C_Timer.After(2, Scheduler)
         end
         LibStub("AceConfig-3.0"):RegisterOptionsTable("InstanceScheduler", Option)
-        LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Locale["InstanceScheduler"])
+        LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Locale["InstanceScheduler"], nil, "global")
         LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Option.args.basic.name, Locale["InstanceScheduler"], "basic")
         LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Option.args.message.name, Locale["InstanceScheduler"], "message")
         LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Option.args.advanced.name, Locale["InstanceScheduler"], "advanced")

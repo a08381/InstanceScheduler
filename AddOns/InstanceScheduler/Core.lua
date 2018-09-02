@@ -26,6 +26,7 @@ setfenv(1, Addon)
 
 Variables = {
     InGroupPlayer = "",
+    IsGroupPlayerForPortal = false,
     TempTime = 0,
     InGroupTime = 0,
     RunTime = 0,
@@ -56,14 +57,20 @@ Variables = {
         "时光之穴"
     },
     Line = {},
+    PortalLine = {},
     Limit = {
         InLine = {},
         RemoveFromLine = {},
+        WaitPortal = {},
         Menu = {},
         InstanceList = {},
         InstanceLocation = {},
         Advice = {},
-        AutoResponse = {}
+        AutoResponse = {},
+        Blacklist = {}
+    },
+    preBlacklist = {
+        CheckTime = GetTime()
     }
 }
 

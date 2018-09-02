@@ -121,8 +121,9 @@ Option = {
                             disabled = function(info)
                                 return not Variables.Status
                             end,
-                            min = 20,
+                            min = 10,
                             max = 120,
+                            bigStep = 5,
                             set = function(info, val)
                                 SavedVariables.LEAVE_TIME = val
                             end,

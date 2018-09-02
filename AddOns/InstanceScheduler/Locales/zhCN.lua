@@ -109,6 +109,13 @@ M["InLine"] = {
     本插件完全免费，任何兜售免费CD宏的都是骗子
     ]]
 }
+M["WaitPortal"] = {
+    name = "等待开门",
+    key = "4",
+    response = [[
+    您已加入了队列~~ 请稍等，CD姬很快就会来组你啦~~
+    ]]
+}
 M["InstanceProblem"] = {
     name = "副本问题",
     response = [[
@@ -159,5 +166,11 @@ M["Leave"] = {
     name = "离开队伍",
     response = [[
     其他副本请不要修改难度！！祝您刷出想要的坐骑~~~
+    ]]
+}
+M["InBlacklist"] = {
+    name = "在黑名单",
+    response = [[
+    您因为违规操作已被禁止使用本CD号 %s 秒，希望您能素质使用
     ]]
 }

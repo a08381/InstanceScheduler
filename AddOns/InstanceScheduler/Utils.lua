@@ -19,7 +19,7 @@ local messages, fullName, res, temp, mapid, player
 
 ErrorCatcher = function(err)
     SELECTED_CHAT_FRAME:AddMessage("|cff99ffff【副本进度共享】|r|cfff1c232哦！代码出错了！|r")
-    SELECTED_CHAT_FRAME:AddMessage("cfff1c232请将以下内容截图发送给插件作者以便于调试|r")
+    SELECTED_CHAT_FRAME:AddMessage("|cfff1c232请将以下内容截图发送给插件作者以便于调试|r")
     SELECTED_CHAT_FRAME:AddMessage(err)
 end
 
@@ -126,6 +126,7 @@ function Util:SwitchOn()
         Variables.Status = true
         C_Timer.After(2, Scheduler)
         Util:ExtendsSavedInstance(Variables.Status)
+        Variables.preBlacklist["CheckTime"] = GetTime()
         DEFAULT_CHAT_FRAME:AddMessage(Locale.PrintPrefix..Locale.SwitchOn)
     end
 end

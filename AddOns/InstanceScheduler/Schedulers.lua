@@ -13,6 +13,13 @@ setfenv(1, Addon)
 local CheckTimer = function()
     if not IsInGroup() then
         if Variables.InGroupPlayer == "" then
+            if #Variables.PortalLine > 0 and UnitPosition("player") then
+                local sender = Variables.PortalLine[1]
+                Variables.InGroupPlayer = sender
+                Variables.IsGroupPlayerForPortal = true
+                InviteUnit(sender)
+                table.remove(Variables.PortalLine, 1)
+            end
             if #Variables.Line > 0 and UnitPosition("player") then
                 local sender = Variables.Line[1]
                 Variables.InGroupPlayer = sender
@@ -48,46 +55,63 @@ local CheckTimer = function()
                 if Variables.InGroupTime ~= 0 then
                     Variables.InGroupTime = 0
                     local map = Util:GetPlayerMapName("party1")
-                    for _, v in pairs(Variables.LeaveMaps) do
-                        if v == map then
-                            Util:SendPartyMessage(Messages["InstanceProblem"].response)
-                            C_Timer.After(0.5, function()
-                                LeaveParty()
-                            end)
-                            return
+                    if Variables.IsGroupPlayerForPortal then
+                        local imap = Util:GetPlayerMapName("player")
+                        if imap ~= map then
+                            LeaveParty()
+                        else
+                            Variables.RunTime = GetTime()
                         end
+                    else
+                        for _, v in pairs(Variables.LeaveMaps) do
+                            if v == map then
+                                Util:SendPartyMessage(Messages["InstanceProblem"].response)
+                                C_Timer.After(0.5, function()
+                                    LeaveParty()
+                                end)
+                                return
+                            end
+                        end
+                        ResetInstances()
+                        Util:SendPartyMessage(Messages["ResetComplete"].response)
+                        Variables.RunTime = GetTime()
                     end
-                    ResetInstances()
-                    Util:SendPartyMessage(Messages["ResetComplete"].response)
-                    Variables.RunTime = GetTime()
                 elseif Variables.RunTime ~= 0 then
                     if times - Variables.RunTime >= SavedVariables.LEAVE_TIME then
                         Variables.RunTime = 0
                         LeaveParty()
                         return
                     else
-                        if not UnitPosition("party1") then
-                            Variables.RunTime = 0
-                            local name, realm = UnitName("party1")
-                            local s = Util:NameFormat(name, realm, true)
-                            Util:SendPartyMessage(Messages["ChangeLeader"].response)
-                            PromoteToLeader(s)
-                            Util:SendPartyMessage(Messages["Leave"].response)
-                            C_Timer.After(0.5, function()
+                        if Variables.IsGroupPlayerForPortal then
+                            local map, imap = Util:GetPlayerMapName("party1"), Util:GetPlayerMapName("player")
+                            if map ~= imap then
+                                Variables.RunTime = 0
                                 LeaveParty()
-                                local fullname = Util:NameFormat(name, realm)
-                                local realm = Util:GetRealm(fullname)
-                                if not SavedVariables.Users[realm] then
-                                    SavedVariables.Users[realm] = {}
-                                end
-                                local times = SavedVariables.Users[realm][fullname]
-                                if times then
-                                    SavedVariables.Users[realm][fullname] = times + 1
-                                else
-                                    SavedVariables.Users[realm][fullname] = 1
-                                end
-                                SavedVariables.Total = SavedVariables.Total + 1
-                            end)
+                            end
+                        else
+                            if not UnitPosition("party1") then
+                                Variables.RunTime = 0
+                                local name, realm = UnitName("party1")
+                                local s = Util:NameFormat(name, realm, true)
+                                Util:SendPartyMessage(Messages["ChangeLeader"].response)
+                                PromoteToLeader(s)
+                                Util:SendPartyMessage(Messages["Leave"].response)
+                                C_Timer.After(0.5, function()
+                                    LeaveParty()
+                                    local fullname = Util:NameFormat(name, realm)
+                                    local realm = Util:GetRealm(fullname)
+                                    if not SavedVariables.Users[realm] then
+                                        SavedVariables.Users[realm] = {}
+                                    end
+                                    local times = SavedVariables.Users[realm][fullname]
+                                    if times then
+                                        SavedVariables.Users[realm][fullname] = times + 1
+                                    else
+                                        SavedVariables.Users[realm][fullname] = 1
+                                    end
+                                    SavedVariables.Total = SavedVariables.Total + 1
+                                end)
+                            end
                         end
                     end
                 end
@@ -96,20 +120,38 @@ local CheckTimer = function()
     end
 end
 
+local settingBlacklist = function()
+    for k, v in pairs(Variables.preBlacklist) do
+        if k ~= "CheckTime" and v >= 10 then
+            SavedVariables.Blacklist[k] = time() + 1800
+        end
+    end
+    wipe(Variables.preBlacklist)
+    Variables.preBlacklist["CheckTime"] = GetTime()
+end
+
+local preparingBlacklist = function()
+    for _, n in pairs(Variables.Limit) do
+        for k, v in pairs(n) do
+            if Variables.preBlacklist[k] then
+                Variables.preBlacklist[k] = Variables.preBlacklist[k] + 1
+            else
+                Variables.preBlacklist[k] = 1
+            end
+        end
+        wipe(n)
+    end
+end
+
 function Scheduler()
     if not Variables.Status then return end
     xpcall(CheckTimer, ErrorCatcher)
+    preparingBlacklist()
+    if Variables.preBlacklist["CheckTime"] - time() >= 60 then
+        settingBlacklist()
+    end
     if StaticPopup1:IsShown() and StaticPopup1Button1:GetText() == "取消" then
         StaticPopup1Button1:Click()
     end
-    Variables.Limit = {
-        InLine = {},
-        RemoveFromLine = {},
-        Menu = {},
-        InstanceList = {},
-        InstanceLocation = {},
-        Advice = {},
-        AutoResponse = {}
-    }
     C_Timer.After(2, Scheduler)
 end
