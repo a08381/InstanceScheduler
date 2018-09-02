@@ -32,6 +32,8 @@ Variables = {
     RunTime = 0,
     TempMembers = 0,
     DifficultyID = { 3, 4, 5, 6, 9, 14, 15 },
+    HordeClubID = 832431025,
+    AllianceClubID = 832431205,
     SavedInstances =
     {
         "冰冠堡垒",
