@@ -30,6 +30,7 @@ local CheckTimer = function()
             end
         else
             Variables.InGroupPlayer = ""
+            Variables.IsGroupPlayerForPortal = false
         end
     else
         local members = GetNumGroupMembers()
