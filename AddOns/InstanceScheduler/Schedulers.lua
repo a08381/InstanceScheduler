@@ -121,9 +121,17 @@ local CheckTimer = function()
 end
 
 local settingBlacklist = function()
+    local time = time()
     for k, v in pairs(Variables.preBlacklist) do
         if k ~= "CheckTime" and v >= 10 then
-            SavedVariables.Blacklist[k] = time() + 1800
+            if SavedVariables.Blacklist[k] then
+                SavedVariables.Blacklist[k] = SavedVariables.Blacklist[k] + 1800
+                if SavedVariables.Blacklist[k] - time >= 7200 then
+                    SavedVariables.Blacklist[k] = -1
+                end
+            else
+                SavedVariables.Blacklist[k] = time + 1800
+            end
         end
     end
     wipe(Variables.preBlacklist)
