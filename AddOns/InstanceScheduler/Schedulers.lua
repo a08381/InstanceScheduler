@@ -19,12 +19,14 @@ local CheckTimer = function()
                 Variables.IsGroupPlayerForPortal = true
                 InviteUnit(sender)
                 table.remove(Variables.PortalLine, 1)
+                return
             end
             if #Variables.Line > 0 and UnitPosition("player") then
                 local sender = Variables.Line[1]
                 Variables.InGroupPlayer = sender
                 InviteUnit(sender)
                 table.remove(Variables.Line, 1)
+                return
             end
         else
             Variables.InGroupPlayer = ""
