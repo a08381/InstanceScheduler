@@ -30,51 +30,65 @@ Event["CHAT_MSG_WHISPER"] = function(...)
                 return
             end
         end
-        if Util:First(message, Messages["InLine"].key) and not Variables.Limit.InLine[sender] then
-            Variables.Limit.InLine[sender] = true
-            for i, v in ipairs(Variables.Line) do
-                if sender == v then
-                    Util:SendWhisperMessage(Messages["InLine"].response, sender, i)
-                    return
+        if Util:First(message, Messages["InLine"].key) then
+            if not Variables.Limit.InLine[sender] then
+                Variables.Limit.InLine[sender] = true
+                for i, v in ipairs(Variables.Line) do
+                    if sender == v then
+                        Util:SendWhisperMessage(Messages["InLine"].response, sender, i)
+                        return
+                    end
+                end
+                if not UnitInParty(sender) and Variables.InGroupPlayer ~= sender then
+                    table.insert(Variables.Line, sender)
+                    Util:SendWhisperMessage(Messages["InLine"].response, sender, #Variables.Line)
                 end
             end
-            if not UnitInParty(sender) and Variables.InGroupPlayer ~= sender then
-                table.insert(Variables.Line, sender)
-                Util:SendWhisperMessage(Messages["InLine"].response, sender, #Variables.Line)
-            end
-        elseif Util:First(message, Messages["RemoveFromLine"].key) and not Variables.Limit.RemoveFromLine[sender] and Variables.InGroupPlayer ~= sender then
-            Variables.Limit.RemoveFromLine[sender] = true
-            for i, v in ipairs(Variables.Line) do
-                if sender == v then
-                    table.remove(Variables.Line, i)
-                    Util:SendWhisperMessage(Messages["RemoveFromLine"].response, sender)
-                    return
+        elseif Util:First(message, Messages["RemoveFromLine"].key) and Variables.InGroupPlayer ~= sender then
+            if not Variables.Limit.RemoveFromLine[sender] then
+                Variables.Limit.RemoveFromLine[sender] = true
+                for i, v in ipairs(Variables.Line) do
+                    if sender == v then
+                        table.remove(Variables.Line, i)
+                        Util:SendWhisperMessage(Messages["RemoveFromLine"].response, sender)
+                        return
+                    end
                 end
             end
-        elseif Util:First(message, Messages["WaitPortal"].key) and not Variables.Limit.WaitPortal[sender] then
-            Variables.Limit.WaitPortal[sender] = true
-            for i, v in ipairs(Variables.PortalLine) do
-                if sender == v then
-                    Util:SendWhisperMessage(Messages["WaitPortal"].response, sender, i)
-                    return
+        elseif Util:First(message, Messages["WaitPortal"].key) then
+            if not Variables.Limit.WaitPortal[sender] then
+                Variables.Limit.WaitPortal[sender] = true
+                for i, v in ipairs(Variables.PortalLine) do
+                    if sender == v then
+                        Util:SendWhisperMessage(Messages["WaitPortal"].response, sender, i)
+                        return
+                    end
+                end
+                if not UnitInParty(sender) and Variables.InGroupPlayer ~= sender then
+                    table.insert(Variables.PortalLine, sender)
+                    Util:SendWhisperMessage(Messages["WaitPortal"].response, sender, #Variables.PortalLine)
                 end
             end
-            if not UnitInParty(sender) and Variables.InGroupPlayer ~= sender then
-                table.insert(Variables.PortalLine, sender)
-                Util:SendWhisperMessage(Messages["WaitPortal"].response, sender, #Variables.PortalLine)
+        elseif Util:First(message, Messages["Menu"].key) then
+            if not Variables.Limit.Menu[sender] then
+                Variables.Limit.Menu[sender] = true
+                Util:SendWhisperMessage(Messages["Menu"].response, sender)
             end
-        elseif Util:First(message, Messages["Menu"].key) and not Variables.Limit.Menu[sender] then
-            Variables.Limit.Menu[sender] = true
-            Util:SendWhisperMessage(Messages["Menu"].response, sender)
-        elseif Util:First(message, Messages["InstanceList"].key) and not Variables.Limit.InstanceList[sender] then
-            Variables.Limit.InstanceList[sender] = true
-            Util:SendWhisperMessage(Messages["InstanceList"].response, sender)
-        elseif Util:First(message, Messages["InstanceLocation"].key) and not Variables.Limit.InstanceLocation[sender] then
-            Variables.Limit.InstanceLocation[sender] = true
-            Util:SendWhisperMessage(Messages["InstanceLocation"].response, sender)
-        elseif Util:First(message, Messages["Advice"].key) and not Variables.Limit.Advice[sender] then
-            Variables.Limit.Advice[sender] = true
-            Util:SendWhisperMessage(Messages["Advice"].response, sender)
+        elseif Util:First(message, Messages["InstanceList"].key) then
+            if not Variables.Limit.InstanceList[sender] then
+                Variables.Limit.InstanceList[sender] = true
+                Util:SendWhisperMessage(Messages["InstanceList"].response, sender)
+            end
+        elseif Util:First(message, Messages["InstanceLocation"].key) then
+            if not Variables.Limit.InstanceLocation[sender] then
+                Variables.Limit.InstanceLocation[sender] = true
+                Util:SendWhisperMessage(Messages["InstanceLocation"].response, sender)
+            end
+        elseif Util:First(message, Messages["Advice"].key) then
+            if not Variables.Limit.Advice[sender] then
+                Variables.Limit.Advice[sender] = true
+                Util:SendWhisperMessage(Messages["Advice"].response, sender)
+            end
         elseif not Variables.Limit.AutoResponse[sender] then
             Variables.Limit.AutoResponse[sender] = true
             Util:SendWhisperMessage(Messages["AutoResponse"].response, sender)
