@@ -64,7 +64,12 @@ function Util:NameFormat(name, realm, hide)
 end
 
 function Util:First(main, str)
-    return main:len() >= str:len() and main:sub(1, str:len()):lower() == str:lower()
+    str:gsub("[^|]+", function(k)
+        if main:len() >= k:len() and main:sub(1, k:len()):lower() == k:lower() then
+            return true
+        end
+    end)
+    return false
 end
 
 function Util:Split(str)

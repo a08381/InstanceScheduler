@@ -9,7 +9,7 @@ local _, Addon = ...
 
 setfenv(1, Addon)
 
-local GetMessageTable = function()
+function Util:GetMessageTable()
     local args = {}
     for k, v in pairs(Messages) do
         args[k] = {
@@ -138,7 +138,7 @@ Option = {
         message = {
             name = Locale["message_option"],
             type = "group",
-            args = GetMessageTable()
+            args = nil
         },
         advanced = {
             name = Locale["advanced_option"],

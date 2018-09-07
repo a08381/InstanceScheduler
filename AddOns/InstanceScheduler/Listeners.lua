@@ -221,6 +221,7 @@ Event["ADDON_LOADED"] = function(...)
             Frame:RegisterEvent("GROUP_ROSTER_UPDATE")
             C_Timer.After(2, Scheduler)
         end
+        Option.args.message.args = Util:GetMessageTable()
         LibStub("AceConfig-3.0"):RegisterOptionsTable("InstanceScheduler", Option)
         LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Locale["InstanceScheduler"], nil, "global")
         LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Option.args.basic.name, Locale["InstanceScheduler"], "basic")
