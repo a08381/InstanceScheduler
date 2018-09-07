@@ -64,12 +64,13 @@ function Util:NameFormat(name, realm, hide)
 end
 
 function Util:First(main, str)
+    local flag = false
     str:gsub("[^|]+", function(k)
         if main:len() >= k:len() and main:sub(1, k:len()):lower() == k:lower() then
-            return true
+            flag = true
         end
     end)
-    return false
+    return flag
 end
 
 function Util:Split(str)
