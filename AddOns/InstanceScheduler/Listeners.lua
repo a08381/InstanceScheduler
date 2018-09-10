@@ -217,14 +217,17 @@ Event["ADDON_LOADED"] = function(...)
                     SavedVariables.Messages[k] = nil
                 end
             else
-                for n, t in pairs(v) do
-                    if not SavedVariables.Messages.Extras[n] then
+                for n in pairs(v) do
+                    if not Messages.Extras[n] then
                         SavedVariables.Messages.Extras[n] = nil
                     end
                 end
             end
         end
         Messages = SavedVariables.Messages
+        for k in pairs(Messages.Extras) do
+            Variables.Limit[k] = {}
+        end
         if SavedVariables.AUTO_START then
             Variables.Status = true
             Frame:RegisterEvent("CHAT_MSG_WHISPER")
