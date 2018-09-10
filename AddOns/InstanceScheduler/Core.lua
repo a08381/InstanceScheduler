@@ -64,10 +64,6 @@ Variables = {
         InLine = {},
         RemoveFromLine = {},
         WaitPortal = {},
-        Menu = {},
-        InstanceList = {},
-        InstanceLocation = {},
-        Advice = {},
         AutoResponse = {},
         Blacklist = {}
     },

@@ -69,29 +69,20 @@ Event["CHAT_MSG_WHISPER"] = function(...)
                     Util:SendWhisperMessage(Messages["WaitPortal"].response, sender, #Variables.PortalLine)
                 end
             end
-        elseif Util:First(message, Messages["Menu"].key) then
-            if not Variables.Limit.Menu[sender] then
-                Variables.Limit.Menu[sender] = true
-                Util:SendWhisperMessage(Messages["Menu"].response, sender)
+        else
+            for k, v in pairs(Messages["Extras"]) do
+                if Util:First(message, v.key) then
+                    if not Variables.Limit[k][sender] then
+                        Variables.Limit[k][sender] = true
+                        Util:SendWhisperMessage(v.response, sender)
+                    end
+                    return
+                end
             end
-        elseif Util:First(message, Messages["InstanceList"].key) then
-            if not Variables.Limit.InstanceList[sender] then
-                Variables.Limit.InstanceList[sender] = true
-                Util:SendWhisperMessage(Messages["InstanceList"].response, sender)
+            if not Variables.Limit.AutoResponse[sender] then
+                Variables.Limit.AutoResponse[sender] = true
+                Util:SendWhisperMessage(Messages["AutoResponse"].response, sender)
             end
-        elseif Util:First(message, Messages["InstanceLocation"].key) then
-            if not Variables.Limit.InstanceLocation[sender] then
-                Variables.Limit.InstanceLocation[sender] = true
-                Util:SendWhisperMessage(Messages["InstanceLocation"].response, sender)
-            end
-        elseif Util:First(message, Messages["Advice"].key) then
-            if not Variables.Limit.Advice[sender] then
-                Variables.Limit.Advice[sender] = true
-                Util:SendWhisperMessage(Messages["Advice"].response, sender)
-            end
-        elseif not Variables.Limit.AutoResponse[sender] then
-            Variables.Limit.AutoResponse[sender] = true
-            Util:SendWhisperMessage(Messages["AutoResponse"].response, sender)
         end
     end
 end
@@ -208,8 +199,29 @@ Event["ADDON_LOADED"] = function(...)
             SavedVariables.Blacklist = {}
         end
         for k, v in pairs(Messages) do
-            if not SavedVariables.Messages[k] then
-                SavedVariables.Messages[k] = v
+            if k ~= "Extras" then
+                if not SavedVariables.Messages[k] then
+                    SavedVariables.Messages[k] = v
+                end
+            else
+                for n, t in pairs(v) do
+                    if not SavedVariables.Messages.Extras[n] then
+                        SavedVariables.Messages.Extras[n] = t
+                    end
+                end
+            end
+        end
+        for k, v in pairs(SavedVariables.Messages) do
+            if k ~= "Extras" then
+                if not Messages[k] then
+                    SavedVariables.Messages[k] = nil
+                end
+            else
+                for n, t in pairs(v) do
+                    if not SavedVariables.Messages.Extras[n] then
+                        SavedVariables.Messages.Extras[n] = nil
+                    end
+                end
             end
         end
         Messages = SavedVariables.Messages

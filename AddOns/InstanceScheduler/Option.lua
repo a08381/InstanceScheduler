@@ -12,37 +12,73 @@ setfenv(1, Addon)
 function Util:GetMessageTable()
     local args = {}
     for k, v in pairs(Messages) do
-        args[k] = {
-            name = v.name,
-            type = "group",
-            args = {
-                key = {
-                    name = Locale["message_key"],
-                    type = "input",
-                    hidden = function(info)
-                        return not v.key
-                    end,
-                    get = function(info)
-                        return v.key
-                    end,
-                    set = function(info, val)
-                        v.key = val
-                    end
-                },
-                response = {
-                    name = Locale["message_response"],
-                    type = "input",
-                    width = "full",
-                    multiline = true,
-                    get = function(info)
-                        return v.response
-                    end,
-                    set = function(info, val)
-                        v.response = val
-                    end
+        if k ~= "Extras" then
+            args[k] = {
+                name = v.name,
+                type = "group",
+                args = {
+                    key = {
+                        name = Locale["message_key"],
+                        type = "input",
+                        hidden = function(info)
+                            return not v.key
+                        end,
+                        get = function(info)
+                            return v.key
+                        end,
+                        set = function(info, val)
+                            v.key = val
+                        end
+                    },
+                    response = {
+                        name = Locale["message_response"],
+                        type = "input",
+                        width = "full",
+                        multiline = true,
+                        get = function(info)
+                            return v.response
+                        end,
+                        set = function(info, val)
+                            v.response = val
+                        end
+                    }
                 }
             }
-        }
+        else
+            for n, t in pairs(v) do
+                args[n] = {
+                    name = t.name,
+                    type = "group",
+                    args = {
+                        key = {
+                            name = Locale["message_key"],
+                            type = "input",
+                            hidden = function(info)
+                                return not t.key
+                            end,
+                            get = function(info)
+                                return t.key
+                            end,
+                            set = function(info, val)
+                                t.key = val
+                            end
+                        },
+                        response = {
+                            name = Locale["message_response"],
+                            type = "input",
+                            width = "full",
+                            multiline = true,
+                            get = function(info)
+                                return t.response
+                            end,
+                            set = function(info, val)
+                                t.response = val
+                            end
+                        }
+                    }
+                }
+            end
+        end
     end
     return args
 end
