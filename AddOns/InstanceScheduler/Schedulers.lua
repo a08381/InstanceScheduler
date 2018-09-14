@@ -143,7 +143,7 @@ end
 
 local preparingBlacklist = function()
     for _, n in pairs(Variables.Limit) do
-        for k, v in pairs(n) do
+        for k in pairs(n) do
             if Variables.preBlacklist[k] then
                 Variables.preBlacklist[k] = Variables.preBlacklist[k] + 1
             else

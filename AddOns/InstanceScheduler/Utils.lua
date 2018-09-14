@@ -122,7 +122,7 @@ function Util:SwitchOn()
     if Variables.Status then
         Frame:UnregisterAllEvents()
         Variables.Status = false
-        Util:ExtendsSavedInstance(Variables.Status)
+        if SavedVariables.Extended then Util:ExtendsSavedInstance(Variables.Status) end
         DEFAULT_CHAT_FRAME:AddMessage(Locale.PrintPrefix..Locale.SwitchOff)
     else
         Frame:RegisterEvent("CHAT_MSG_WHISPER")
@@ -131,7 +131,7 @@ function Util:SwitchOn()
         Frame:RegisterEvent("GROUP_ROSTER_UPDATE")
         Variables.Status = true
         C_Timer.After(2, Scheduler)
-        Util:ExtendsSavedInstance(Variables.Status)
+        if SavedVariables.Extended then Util:ExtendsSavedInstance(Variables.Status) end
         Variables.preBlacklist["CheckTime"] = GetTime()
         DEFAULT_CHAT_FRAME:AddMessage(Locale.PrintPrefix..Locale.SwitchOn)
     end

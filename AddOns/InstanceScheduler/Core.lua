@@ -34,6 +34,8 @@ Variables = {
     DifficultyID = { 3, 4, 5, 6, 9, 14, 15 },
     HordeClubID = 832431025,
     AllianceClubID = 832431205,
+    HordeInviteCode = "xkMZG9vUOMG",
+    AllianceInviteCode = "vgPrwnpTMPm",
     SavedInstances =
     {
         "冰冠堡垒",

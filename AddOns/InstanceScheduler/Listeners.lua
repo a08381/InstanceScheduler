@@ -10,12 +10,10 @@ local ADDON, Addon = ...
 
 setfenv(1, Addon)
 
-local message, sender
-
 Event = {}
 
 Event["CHAT_MSG_WHISPER"] = function(...)
-    message, sender = ...
+    local message, sender = ...
     if UnitPosition("player") and sender ~= Util:NameFormat(UnitName("player")) then
         if SavedVariables.Blacklist[sender] and not Variables.Limit.Blacklist[sender] then
             Variables.Limit.Blacklist[sender] = true
@@ -88,7 +86,7 @@ Event["CHAT_MSG_WHISPER"] = function(...)
 end
 
 Event["CHAT_MSG_PARTY"] = function(...)
-    message, sender = ...
+    local message, sender = ...
     if Util:First(message, Messages["ChangeDifficulty"].key) and sender ~= Util:NameFormat(UnitName("player")) then
         SetLegacyRaidDifficultyID(3)
         Util:SendPartyMessage(Messages["ChangeDifficulty"].response)
@@ -113,7 +111,7 @@ end
 --]]
 
 Event["PARTY_INVITE_REQUEST"] = function(...)
-    sender = ...
+    local sender = ...
     if Variables.preBlacklist[sender] then
         Variables.preBlacklist[sender] = Variables.preBlacklist[sender] + 1
     else
@@ -122,34 +120,18 @@ Event["PARTY_INVITE_REQUEST"] = function(...)
     DeclineGroup()
 end
 
-Event["GROUP_ROSTER_UPDATE"] = function(...)
+Event["GROUP_ROSTER_UPDATE"] = function()
     if Variables.Status then
-        if UnitPosition("player") and not Variables.TempStatus then
-            Frame:RegisterEvent("CHAT_MSG_WHISPER")
-            Frame:RegisterEvent("CHAT_MSG_PARTY")
-            Frame:RegisterEvent("PARTY_INVITE_REQUEST")
-            Frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-            Variables.TempStatus = true
-            if SavedVariables.Extended then Util:ExtendsSavedInstance(Variables.TempStatus) end
-        elseif Variables.TempStatus and not UnitPosition("player") then
-            Frame:UnregisterEvent("CHAT_MSG_WHISPER")
-            Frame:UnregisterEvent("CHAT_MSG_PARTY")
-            Frame:UnregisterEvent("PARTY_INVITE_REQUEST")
-            Variables.TempStatus = false
-            if SavedVariables.Extended then Util:ExtendsSavedInstance(Variables.TempStatus) end
-            return
-        end
-    end
-    if Variables.TempStatus then
         if IsInGroup() then
-            if Variables.TempMembers == 0 and GetNumGroupMembers() == 1 then
+            local members = GetNumGroupMembers()
+            if Variables.TempMembers == 0 and members == 1 then
                 Variables.TempTime = GetTime()
             end
-            if GetNumGroupMembers() == 2 and Variables.TempMembers == 1 and UnitIsGroupLeader("player") then
+            if members == 2 and Variables.TempMembers == 1 and UnitIsGroupLeader("player") then
                 Variables.InGroupTime = GetTime()
             end
-            if GetNumGroupMembers() >= 3 and Variables.TempMembers < GetNumGroupMembers() then
-                for i = GetNumGroupMembers() - 1, 2 do
+            if members >= 3 and Variables.TempMembers < members then
+                for i = members - 1, 2 do
                     local name, realm = UnitName("party" .. i)
                     local fullname = Util:NameFormat(name, realm, true)
                     UninviteUnit(fullname)
@@ -170,6 +152,13 @@ Event["GROUP_ROSTER_UPDATE"] = function(...)
             end
         end
         Variables.TempMembers = IsInGroup() and GetNumGroupMembers() or 0
+    end
+end
+
+Event["PLAYER_LOGIN"] = function()
+    Frame:UnregisterEvent("PLAYER_LOGIN")
+    if SavedVariables.AUTO_START then
+        Util:SwitchOn()
     end
 end
 
@@ -198,6 +187,7 @@ Event["ADDON_LOADED"] = function(...)
         if not SavedVariables.Blacklist then
             SavedVariables.Blacklist = {}
         end
+
         for k, v in pairs(Messages) do
             if k ~= "Extras" then
                 if not SavedVariables.Messages[k] then
@@ -228,14 +218,7 @@ Event["ADDON_LOADED"] = function(...)
         for k in pairs(Messages.Extras) do
             Variables.Limit[k] = {}
         end
-        if SavedVariables.AUTO_START then
-            Variables.Status = true
-            Frame:RegisterEvent("CHAT_MSG_WHISPER")
-            Frame:RegisterEvent("CHAT_MSG_PARTY")
-            Frame:RegisterEvent("PARTY_INVITE_REQUEST")
-            Frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-            C_Timer.After(2, Scheduler)
-        end
+
         Option.args.message.args = Util:GetMessageTable()
         LibStub("AceConfig-3.0"):RegisterOptionsTable("InstanceScheduler", Option)
         LibStub("AceConfigDialog-3.0"):AddToBlizOptions("InstanceScheduler", Locale["InstanceScheduler"], nil, "global")
