@@ -150,6 +150,9 @@ Event["GROUP_ROSTER_UPDATE"] = function()
             if GetLegacyRaidDifficultyID() ~= 4 then
                 SetLegacyRaidDifficultyID(4)
             end
+            if GetDungeonDifficultyID() ~= 23 then
+                SetDungeonDifficultyID(23)
+            end
         end
         Variables.TempMembers = IsInGroup() and GetNumGroupMembers() or 0
     end
