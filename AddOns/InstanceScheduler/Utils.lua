@@ -73,6 +73,28 @@ function Util:First(main, str)
     return flag
 end
 
+function Util:Contains(tab, obj, returnKey)
+    for k, v in pairs(tab) do
+        if v == obj then
+            if returnKey then
+                 return k
+            else
+                 return true
+            end
+        end
+    end
+    return false
+end
+
+function Util:IndexOf(tab, obj)
+    for i, v in ipairs(tab) do
+        if v == obj then
+            return i
+        end
+    end
+    return -1
+end
+
 function Util:Split(str)
     res = {}
     if not str:match('\r?\n') then
@@ -105,14 +127,11 @@ function Util:ExtendsSavedInstance(stats)
     for i=1,GetNumSavedInstances() do
         local a, _, _, b, _, c = GetSavedInstanceInfo(i)
         for _,v in pairs(Variables.SavedInstances) do
-            if v == a and c~=stats then
-                for _, v in pairs(Variables.DifficultyID) do
-                    if v == b then
-                        if not stats and SavedVariables.Extended_Only then break end
-                        SetSavedInstanceExtend(i, stats)
-                        break
-                    end
-                end
+            if v == a and c~=stats and Util:Contains(Variables.DifficultyID, b) then
+                repeat
+                    if SavedVariables.Extended_Only and not stats then break end
+                    SetSavedInstanceExtend(i, stats)
+                until true
             end
         end
     end

@@ -28,39 +28,45 @@ Event["CHAT_MSG_WHISPER"] = function(...)
                 return
             end
         end
+        for k, v in pairs(Messages["Extras"]) do
+            if Util:First(message, v.key) then
+                if not Variables.Limit[k][sender] then
+                    Variables.Limit[k][sender] = true
+                    Util:SendWhisperMessage(v.response, sender)
+                end
+                return
+            end
+        end
         if Util:First(message, Messages["InLine"].key) then
             if not Variables.Limit.InLine[sender] then
                 Variables.Limit.InLine[sender] = true
-                for i, v in ipairs(Variables.Line) do
-                    if sender == v then
-                        Util:SendWhisperMessage(Messages["InLine"].response, sender, i)
-                        return
-                    end
+                local i = Util:IndexOf(Variables.Line, sender)
+                if i ~= -1 then
+                    Util:SendWhisperMessage(Messages["InLine"].response, sender, i)
+                    return
                 end
                 if not UnitInParty(sender) and Variables.InGroupPlayer ~= sender then
                     table.insert(Variables.Line, sender)
                     Util:SendWhisperMessage(Messages["InLine"].response, sender, #Variables.Line)
                 end
             end
-        elseif Util:First(message, Messages["RemoveFromLine"].key) and Variables.InGroupPlayer ~= sender then
-            if not Variables.Limit.RemoveFromLine[sender] then
+        elseif Util:First(message, Messages["RemoveFromLine"].key) then
+            if not Variables.Limit.RemoveFromLine[sender] and Variables.InGroupPlayer ~= sender then
                 Variables.Limit.RemoveFromLine[sender] = true
-                for i, v in ipairs(Variables.Line) do
-                    if sender == v then
-                        table.remove(Variables.Line, i)
-                        Util:SendWhisperMessage(Messages["RemoveFromLine"].response, sender)
-                        return
-                    end
+                local i = Util:IndexOf(Variables.Line, sender)
+                if i ~= -1 then
+                    table.remove(Variables.Line, i)
+                    Util:SendWhisperMessage(Messages["RemoveFromLine"].response, sender)
+                    return
                 end
             end
         elseif Util:First(message, Messages["WaitPortal"].key) then
             if not Variables.Limit.WaitPortal[sender] then
                 Variables.Limit.WaitPortal[sender] = true
-                for i, v in ipairs(Variables.PortalLine) do
-                    if sender == v then
-                        Util:SendWhisperMessage(Messages["WaitPortal"].response, sender, i)
-                        return
-                    end
+                local i = Util:IndexOf(Variables.PortalLine, sender)
+                if i ~= -1 then
+                    Util:SendWhisperMessage(Messages["WaitPortal"].response, sender, i)
+                    return
                 end
                 if not UnitInParty(sender) and Variables.InGroupPlayer ~= sender then
                     table.insert(Variables.PortalLine, sender)
@@ -68,15 +74,6 @@ Event["CHAT_MSG_WHISPER"] = function(...)
                 end
             end
         else
-            for k, v in pairs(Messages["Extras"]) do
-                if Util:First(message, v.key) then
-                    if not Variables.Limit[k][sender] then
-                        Variables.Limit[k][sender] = true
-                        Util:SendWhisperMessage(v.response, sender)
-                    end
-                    return
-                end
-            end
             if not Variables.Limit.AutoResponse[sender] then
                 Variables.Limit.AutoResponse[sender] = true
                 Util:SendWhisperMessage(Messages["AutoResponse"].response, sender)
